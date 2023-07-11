@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body, #__next {
+  flex-direction: column;
+  display: flex;
+  min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+.min-h-75 {
+    min-height: 75vh;
+}
+
+a.active {
+  @apply bg-base-300 text-base-content;
+}
+
+h1 {
+  background: linear-gradient(to top, hsl(var(--p) / 25%) 0%, hsl(var(--p) / 25%) 30%, transparent 30.01%);
+  box-decoration-break: clone;
+}

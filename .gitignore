@@ -1,0 +1,8 @@
+/.env
+/helm/api-platform/charts/*
+!/helm/api-platform/charts/.gitignore
+.idea/
+/vendor/
+
+/.vscode/
+/var/
