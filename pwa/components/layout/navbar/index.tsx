@@ -128,7 +128,7 @@ export const Navbar: FC = () => {
           </div>
           <div className="navbar-start m-auto">
             <Link href="/" className="text-2xl btn btn-ghost normal-case m-auto lg:m-0">
-              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="auto" height="100%" viewBox="10 10 80 80">
+              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="100%" viewBox="10 10 80 80">
                 <g>
                   <path
                     d="M 34.79 77.89 Q 90 70 50 50 Q 10 30 65.21 22.11"

@@ -41,9 +41,9 @@ export const JsonEditor: React.FC = () => {
       ) : (
         <ReactJson src={configurationValue ?? {}} />
       )}
-      <div className="absolute z-10 right-4 top-0 gap-y-2 flex flex-col text-neutral">
+      <div className="absolute z-10 right-4 top-2 gap-y-2 flex flex-col text-neutral">
         <BaseButton
-          variant="neutral"
+          variant="default"
           onClick={() => setPlainMod(!plainMod)}
           text={`Change to ${plainMod ? 'editor' : 'plain'} mode`}
           className="text-neutral"
@@ -51,13 +51,13 @@ export const JsonEditor: React.FC = () => {
         {plainMod && (
           <>
             <BaseButton
-              variant="neutral"
+              variant="default"
               onClick={() => setValue(beautify(defaultJson))}
               text="Apply default value"
               className="text-neutral"
             />
             <BaseButton
-              variant="neutral"
+              variant="default"
               onClick={() => setValue(value ? beautify(JSON.parse(value)) : '')}
               className="text-neutral"
               text="Beautify"

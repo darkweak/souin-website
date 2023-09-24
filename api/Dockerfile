@@ -98,9 +98,9 @@ FROM caddy:2.7-builder-alpine AS app_caddy_builder
 COPY ./middleware /usr/local/go/src/souin_middleware
 
 RUN xcaddy build v2.7.4 \
-	--with github.com/dunglas/mercure/caddy \
-	--with github.com/dunglas/vulcain/caddy \
 	--with souin_middleware=./middleware
+#	--with github.com/dunglas/mercure/caddy \
+#	--with github.com/dunglas/vulcain/caddy \
 
 # Caddy image
 FROM caddy:2-alpine AS app_caddy

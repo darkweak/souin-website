@@ -10,6 +10,10 @@ const allowedHTTPOptions: ReadonlyArray<option> = ['DELETE', 'GET', 'HEAD', 'PAT
   name: method,
   value: method,
 }));
+const modeOptions: ReadonlyArray<option> = ['Strict', 'Bypass request', 'Bypass response', 'Bypass'].map((mode) => ({
+  name: mode,
+  value: mode.toLowerCase().replaceAll(' ', '_'),
+}));
 
 const recursiveStateAccess = (
   key: string,
@@ -215,6 +219,15 @@ export const UserFriendlyEditor: React.FC = () => {
           className: '',
           name: 'distributed',
           onChange: ({ target: { checked } }: BaseSyntheticEvent) => updateForm('distributed', checked),
+        },
+        {
+          options: modeOptions,
+          type: 'select',
+          name: 'mode',
+          placeholder: defaultJson.mode,
+          defaultValue: configuration?.mode,
+          label: 'Mode',
+          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('mode', value),
         },
         {
           type: 'group',

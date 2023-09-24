@@ -8,10 +8,13 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"souin_middleware/pkg/api"
 	"strings"
+	"time"
 
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/yookoala/gofast"
+	"go.uber.org/zap"
 )
 
 const path = "/var/run/php/php-fpm.sock"
@@ -101,11 +104,11 @@ var payload, _ = json.Marshal(body{
 	Valid: true,
 })
 
-func validateDomain(domainIRI string) map[string]string {
+func validateDomain(domainIRI string) map[string]api.Configuration {
 	r, _ := http.NewRequest(http.MethodPatch, "/", nil)
 	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
 	if err != nil {
-		return map[string]string{}
+		return map[string]api.Configuration{}
 	}
 
 	reader := bytes.NewReader(payload)
@@ -121,9 +124,9 @@ func validateDomain(domainIRI string) map[string]string {
 
 	domain := RetrieveDomain(domainIRI)
 
-	subs := map[string]string{}
+	subs := map[string]api.Configuration{}
 	for _, sub := range domain.Configurations {
-		subs[sub.Zone] = sub.IP
+		subs[sub.Zone] = sub
 	}
 
 	return subs
@@ -148,20 +151,28 @@ func (c *customRs) WriteHeader(code int) {
 	c.status = code
 }
 
-type DomainAPI struct {
-	Id             string `json:"@id"`
-	Dns            string `json:"dns"`
-	Configurations []struct {
-		Zone string `json:"zone"`
-		IP   string `json:"ip"`
-	} `json:"configurations"`
+func getClient(maxRetry int, logger *zap.Logger) (gofast.Client, error) {
+	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
+
+	if err != nil {
+		logger.Sugar().Debugf("Impossible to create a new CGI client: %#v", err)
+		if maxRetry > 0 {
+			time.Sleep(5*time.Second)
+			logger.Debug("Try to get another one.")
+			return getClient(maxRetry - 1, logger)
+		}
+
+		return nil, err
+	}
+
+	return client, nil
 }
 
-func RetrieveDomains() []DomainAPI {
+func RetrieveDomains(logger *zap.Logger) []api.Domain {
 	r, _ := http.NewRequest(http.MethodGet, "/", nil)
-	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
+	client, err := getClient(3, logger)
 	if err != nil {
-		return []DomainAPI{}
+		return []api.Domain{}
 	}
 
 	rq := gofast.NewRequest(r)
@@ -175,19 +186,20 @@ func RetrieveDomains() []DomainAPI {
 	_ = res.WriteTo(&rs, bytes.NewBuffer([]byte{}))
 
 	var apiResult struct {
-		Domains []DomainAPI `json:"hydra:member"`
+		Domains []api.Domain `json:"hydra:member"`
 	}
 	_ = json.Unmarshal(rs.body, &apiResult)
-	fmt.Printf("Retrieved %d unvalidated domains from the database.\n", len(apiResult.Domains))
+	logger.Sugar().Debugf("Retrieved %d unvalidated domains from the database.", len(apiResult.Domains))
+	logger.Sugar().Debugf("%+v", apiResult.Domains)
 
 	return apiResult.Domains
 }
 
-func RetrieveDomain(domainIRI string) DomainAPI {
+func RetrieveDomain(domainIRI string) api.Domain {
 	r, _ := http.NewRequest(http.MethodGet, "/", nil)
 	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
 	if err != nil {
-		return DomainAPI{}
+		return api.Domain{}
 	}
 
 	rq := gofast.NewRequest(r)
@@ -200,7 +212,7 @@ func RetrieveDomain(domainIRI string) DomainAPI {
 	var rs customRs
 	_ = res.WriteTo(&rs, bytes.NewBuffer([]byte{}))
 
-	var apiResult DomainAPI
+	var apiResult api.Domain
 	_ = json.Unmarshal(rs.body, &apiResult)
 
 	return apiResult

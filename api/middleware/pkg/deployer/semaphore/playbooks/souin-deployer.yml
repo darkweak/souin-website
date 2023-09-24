@@ -29,6 +29,7 @@
       vars:
         ips: '{{ SUBDOMAINS }}'
         domain: '{{ CURRENT_DOMAIN }}'
+        configuration: '{{ CONFIGURATION }}'
 
     - name: Deploy {{ label }}
       shell: 'docker stack deploy -c {{ basepath }}/docker-compose.handler.yml {{ deploy_name }}_{{ label }}'

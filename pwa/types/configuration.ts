@@ -23,6 +23,7 @@ export type JsonSchema = {
   cache_name?: string;
   default_cache_control?: string;
   distributed?: boolean;
+  mode?: string;
   regex?: { exclude: string };
   stale?: string;
   timeout?: {

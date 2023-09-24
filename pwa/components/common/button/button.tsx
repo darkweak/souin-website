@@ -31,6 +31,8 @@ export const OutlinedButton: React.FC<buttonType> = (props) => (
 
 export const computeClassFromProps = ({ variant }: Omit<additionalTypes, 'text'>): string => {
   switch (variant) {
+    case 'primary':
+      return 'btn-primary';
     case 'info':
       return 'btn-info';
     case 'danger':
@@ -41,6 +43,10 @@ export const computeClassFromProps = ({ variant }: Omit<additionalTypes, 'text'>
       return 'btn-warning';
     case 'ghost':
       return 'btn-ghost';
+    case 'neutral':
+      return 'btn-neutral';
+    case 'default':
+      return 'btn-default';
   }
 
   return '';
@@ -49,6 +55,9 @@ export const computeClassFromProps = ({ variant }: Omit<additionalTypes, 'text'>
 export const BaseButton: React.FC<buttonType> = (props) => {
   let textColor = '';
   switch (props.variant ?? 'info') {
+    case 'primary':
+      textColor = 'hover:text-primary';
+      break;
     case 'info':
       textColor = 'hover:text-info';
       break;

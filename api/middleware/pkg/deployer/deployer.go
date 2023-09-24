@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"souin_middleware/pkg/api"
 )
 
 const (
@@ -77,24 +78,25 @@ func (d *deployer) getAuthRequest(endpoint, method string, body io.Reader) (*htt
 }
 
 type createTaskPayload struct {
-	Domain     string
-	Name       string
-	Subdomains string
-	ProjectId  string
-	TemplateId string
+	Domain        string
+	Name          string
+	Subdomains    string
+	ProjectId     string
+	TemplateId    string
+	Configuration string
 }
 
 const createTaskPayloadTemplate = `{
     "template_id": {{ .TemplateId }},
     "project_id": {{ .ProjectId }},
-    "environment": "{\"ANSIBLE_HOST_KEY_CHECKING\": \"False\",\"ANSIBLE_CONFIG\": \"/tmp/semaphore/ansible.cfg\",\"SUBDOMAINS\": {{ .Subdomains }},\"CURRENT_DOMAIN\": \"{{ .Domain }}\",\"LABEL\": \"{{ .Name }}\"\n}"
+    "environment": "{\"ANSIBLE_HOST_KEY_CHECKING\": \"False\",\"ANSIBLE_CONFIG\": \"/tmp/semaphore/ansible.cfg\",\"SUBDOMAINS\": {{ .Subdomains }},\"CURRENT_DOMAIN\": \"{{ .Domain }}\",,\"CONFIGURATION\": \"{{ .Configuration }}\",\"LABEL\": \"{{ .Name }}\"\n}"
 }`
 
-func (d *deployer) deploy(domain string, subs map[string]string) (err error) {
+func (d *deployer) deploy(domain string, subs map[string]api.Configuration) (err error) {
 	return d.createAndRunTask(domain, subs)
 }
 
-func Deploy(domain string, subs map[string]string) {
+func Deploy(domain string, subs map[string]api.Configuration) {
 	d := newDeployer()
 	err := d.login()
 	if err != nil {

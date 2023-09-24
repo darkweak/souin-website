@@ -34,20 +34,20 @@ func (Middleware) CaddyModule() caddy.ModuleInfo {
 }
 
 func isCandidateToAdd(path, method string, status int) bool {
-	return (status == http.StatusOK || status == http.StatusCreated) &&
-		((method == http.MethodPost && strings.Contains(path, "/domains")) ||
-			((method == http.MethodPost || method == http.MethodPatch) && strings.Contains(path, "/configurations")))
+	return ((status == http.StatusOK && method == http.MethodPatch) || (method == http.MethodPost && status == http.StatusCreated)) && 
+		strings.Contains(path, "/configurations")
 }
 
 func isCandidateToDel(path, method string, status int) bool {
 	return status == http.StatusNoContent && method == http.MethodDelete && strings.Contains(path, "/domains")
 }
 
-type apiPayload struct {
-	Dns    string `json:"dns"`
-	Id     string `json:"@id"`
-	Zone   string `json:"zone"`
-	IP     string `json:"ip"`
+type creationPayload struct {
+	Id            string `json:"@id"`
+	Zone          string `json:"zone"`
+	IP            string `json:"ip"`
+	Configuration string `json:"configuration"`
+
 	Domain struct {
 		Dns string `json:"dns"`
 		Id  string `json:"@id"`
@@ -63,20 +63,15 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 	}
 
 	if isCandidateToAdd(path, method, mrw.status) {
-		var domain apiPayload
+		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
 			return nil
 		}
 
-		root := domain.Dns
-		id := domain.Id
+		root := domain.Domain.Dns
+		id := domain.Domain.Id
 		sub := domain.Zone
 		ip := domain.IP
-
-		if root == "" {
-			root = domain.Domain.Dns
-			id = domain.Domain.Id
-		}
 
 		if root == "" {
 			s.logger.Sugar().Debugf("The root domain is empty %+v", domain)
@@ -100,7 +95,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 func (s *Middleware) Provision(ctx caddy.Context) error {
 	s.logger = ctx.Logger(s)
 	s.checker = pkg.NewCheckerChain(s.logger)
-	domains := pkg.RetrieveDomains()
+	domains := pkg.RetrieveDomains(s.logger)
 
 	for _, domain := range domains {
 		for _, sub := range domain.Configurations {

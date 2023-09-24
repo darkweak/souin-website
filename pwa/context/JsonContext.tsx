@@ -27,6 +27,7 @@ export const defaultJson: JsonSchema = {
   cache_name: 'Souin',
   default_cache_control: 'public, s-maxage=86400',
   distributed: true,
+  mode: 'strict',
   regex: { exclude: 'url_regex_to_exclude.+' },
   stale: '1d',
   timeout: {

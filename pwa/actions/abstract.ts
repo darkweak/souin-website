@@ -67,7 +67,10 @@ export abstract class API {
     instance.interceptors.response.use(
       (r) => r,
       (r) => {
-        if ((401 === r.response.status || 403 === r.response.status) && !r.request.responseURL.includes('/auth')) {
+        if (
+          (!r.response || 401 === r.response.status || 403 === r.response.status) &&
+          !r.request.responseURL.includes('/auth')
+        ) {
           new Token().delete();
           if (typeof window !== 'undefined') {
             window.location.pathname = ROUTES.SIGN_IN;

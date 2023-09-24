@@ -21,9 +21,9 @@ const Home: NextPage = () => {
       />
       <div className="hero min-h-75">
         <div className="hero-content">
-          <Blur className="flex flex-col items-center md:max-w-screen-md max-w-screen-sm gap-y-8 py-4 px-8 m-auto lg:py-8 lg:px-16 rounded-xl">
+          <Blur className="flex flex-col items-center md:max-w-screen-md max-w-screen-sm gap-y-8 py-4 px-8 m-auto lg:py-8 lg:px-16 rounded-xl border border-base-200">
             <Title
-              className="text-shadow-blue bg-gradient-to-r from-primary-focus/80 to-secondary-focus/80 bg-clip-text text-transparent"
+              className="text-shadow-blue bg-gradient-to-r from-accent-focus to-info bg-clip-text text-transparent"
               title="The free Saas HTTP cache you've been waiting for"
             />
             <p className="text-left font-bold">
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
               ensuring fast and reliable content delivery to your users. Plus, as an open source application, Souin
               provides flexibility and transparency, allowing for customizations and contributions from the community.
             </p>
-            <BaseButton text="Try it now" icon="arrow-right" position="right" onClick={() => push(ROUTES.REGISTER)} />
+            <BaseButton variant='ghost' className="xl:btn-lg bg-gradient-to-r from-accent-focus to-info border-none" text="Try it now" icon="arrow-right" position="right" onClick={() => push(ROUTES.REGISTER)} />
           </Blur>
         </div>
       </div>

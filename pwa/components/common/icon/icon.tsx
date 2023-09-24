@@ -11,7 +11,6 @@ import {
   Cpu,
   Icon as FeatherIcon,
   GitHub,
-  Lock,
   MapPin,
   Maximize2,
   Plus,
@@ -20,6 +19,7 @@ import {
   Trash2,
   Truck,
   X,
+  Zap,
 } from 'react-feather';
 
 export type AllowedIcons =
@@ -34,7 +34,6 @@ export type AllowedIcons =
   | 'code'
   | 'extensible'
   | 'github'
-  | 'lock'
   | 'performance'
   | 'pin'
   | 'plus'
@@ -42,7 +41,8 @@ export type AllowedIcons =
   | 'server'
   | 'trash'
   | 'truck'
-  | 'x';
+  | 'x'
+  | 'zap';
 
 function mapIcon(name: AllowedIcons): FeatherIcon | undefined {
   switch (name) {
@@ -68,8 +68,6 @@ function mapIcon(name: AllowedIcons): FeatherIcon | undefined {
       return Maximize2;
     case 'github':
       return GitHub;
-    case 'lock':
-      return Lock;
     case 'performance':
       return Cpu;
     case 'pin':
@@ -86,6 +84,8 @@ function mapIcon(name: AllowedIcons): FeatherIcon | undefined {
       return Truck;
     case 'x':
       return X;
+    case 'zap':
+      return Zap;
   }
 }
 

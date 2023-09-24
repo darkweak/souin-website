@@ -100,6 +100,8 @@ services:
     image: semaphoreui/semaphore:latest
     volumes:
       - ./api/middleware/pkg/deployer/semaphore:/tmp/semaphore:rw,delegated
+    ports:
+      - 3001:3000
     environment:
       SEMAPHORE_DB_USER: ${POSTGRES_USER:-app}
       SEMAPHORE_DB_PASS: ${POSTGRES_PASSWORD:-!ChangeMe!}

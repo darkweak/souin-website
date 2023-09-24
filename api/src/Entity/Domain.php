@@ -63,6 +63,7 @@ class Domain
         'create_domain_denormalization',
         'update_domain_normalization',
         'create_configuration_normalization',
+        'update_configuration_normalization',
     ])]
     private string $dns = '';
 
