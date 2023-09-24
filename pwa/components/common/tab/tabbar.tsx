@@ -12,9 +12,13 @@ type tabbarProps = {
   tabs: ReadonlyArray<tabProps>;
 };
 
-export const Tabbar: React.FC<tabbarProps> = ({ className = '', defaultTab = 0, tabs }) => {
+export const Tabbar: React.FC<tabbarProps> = ({
+  className = '',
+  defaultTab = 0,
+  tabs,
+}) => {
   const [selected, setSelected] = useState(defaultTab);
-  const tabNames = useMemo(() => tabs.map((tab) => tab.name), [tabs]);
+  const tabNames = useMemo(() => tabs.map(tab => tab.name), [tabs]);
   const TabItem = useMemo(() => tabs[selected].TabItem, [tabs, selected]);
 
   return (
@@ -30,7 +34,13 @@ export const Tabbar: React.FC<tabbarProps> = ({ className = '', defaultTab = 0, 
               key={index}
               className={`tab tab-lg ${index === selected ? 'tab-active' : ''}`}
             >
-              <span className={`text-xl font-bold ${index === selected ? 'text-base-100' : ''}`}>{name}</span>
+              <span
+                className={`text-xl font-bold ${
+                  index === selected ? 'text-base-100' : ''
+                }`}
+              >
+                {name}
+              </span>
             </Link>
           ))}
         </div>

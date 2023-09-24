@@ -13,16 +13,23 @@ const Activation: NextPage = () => {
   const pushToast = usePushToast();
 
   useEffect(() => {
-    new ActivationAction().activate({ email: params.get('email') ?? '', token: params.get('token') ?? '' }).then(() => {
-      push(ROUTES.SIGN_IN);
-      pushToast({ text: 'Account validated !', variant: 'success' });
-    });
+    new ActivationAction()
+      .activate({
+        email: params.get('email') ?? '',
+        token: params.get('token') ?? '',
+      })
+      .then(() => {
+        push(ROUTES.SIGN_IN);
+        pushToast({ text: 'Account validated !', variant: 'success' });
+      });
   }, [params, push, pushToast]);
 
   return (
     <>
       <Head title="Email validation" />
-      <InformationalAlert text={'Please wait during we are validating your account.'} />
+      <InformationalAlert
+        text={'Please wait during we are validating your account.'}
+      />
     </>
   );
 };

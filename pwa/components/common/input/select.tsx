@@ -10,9 +10,16 @@ type ChipSelectProps = {
 const ChipSelect: React.FC<ChipSelectProps> = ({ name, onClick }) => {
   return (
     <div className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-base border border-success">
-      <div className="text-xs font-normal leading-none max-w-full flex-initial">{name}</div>
+      <div className="text-xs font-normal leading-none max-w-full flex-initial">
+        {name}
+      </div>
       <div className="flex flex-auto flex-row-reverse">
-        <Icon onClick={onClick} size={12} name="x" className="cursor-pointer hover:text-teal-400 rounded-full ml-2" />
+        <Icon
+          onClick={onClick}
+          size={12}
+          name="x"
+          className="cursor-pointer hover:text-teal-400 rounded-full ml-2"
+        />
       </div>
     </div>
   );
@@ -27,7 +34,10 @@ type OptionProps = option & {
 };
 const Option: React.FC<OptionProps> = ({ name, onClick }) => {
   return (
-    <div onClick={onClick} className="cursor-pointer w-full rounded-t border-b border-base-300 hover:bg-base-200">
+    <div
+      onClick={onClick}
+      className="cursor-pointer w-full rounded-t border-b border-base-300 hover:bg-base-200"
+    >
       <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
         <div className="w-full items-center flex">
           <div className="mx-2 leading-6">{name}</div>
@@ -45,7 +55,10 @@ export type MultiSelectProps = {
   placeholder?: string;
   required?: boolean;
   selectedOptions?: ReadonlyArray<option>;
-  handleChange?: (value: ReadonlyArray<option>, additional?: { iterationKey?: string }) => void;
+  handleChange?: (
+    value: ReadonlyArray<option>,
+    additional?: { iterationKey?: string },
+  ) => void;
 };
 
 export const MultiSelect: React.FC<MultiSelectProps & ClassName> = ({
@@ -70,13 +83,13 @@ export const MultiSelect: React.FC<MultiSelectProps & ClassName> = ({
     (choice: option) => {
       handleChange?.([...selectedOptions, choice]);
     },
-    [handleChange, selectedOptions]
+    [handleChange, selectedOptions],
   );
   const removeChoice = useCallback(
     (choice: option) => {
-      handleChange?.(selectedOptions.filter((c) => c.value !== choice.value));
+      handleChange?.(selectedOptions.filter(c => c.value !== choice.value));
     },
-    [handleChange, selectedOptions]
+    [handleChange, selectedOptions],
   );
 
   return (
@@ -89,7 +102,11 @@ export const MultiSelect: React.FC<MultiSelectProps & ClassName> = ({
         <div className="input mt-auto p-1 flex input-bordered">
           <div className="flex flex-auto flex-wrap">
             {selectedOptions.map((choice, id) => (
-              <ChipSelect key={id} name={choice.name} onClick={() => removeChoice(choice)} />
+              <ChipSelect
+                key={id}
+                name={choice.name}
+                onClick={() => removeChoice(choice)}
+              />
             ))}
             <div className="flex-1">
               <input
@@ -101,7 +118,11 @@ export const MultiSelect: React.FC<MultiSelectProps & ClassName> = ({
             </div>
           </div>
           <div className="w-8 py-1 pl-2 pr-1 border-l flex items-center">
-            <Icon className="text-base-content" size={16} name={open ? 'chevron-up' : 'chevron-down'} />
+            <Icon
+              className="text-base-content"
+              size={16}
+              name={open ? 'chevron-up' : 'chevron-down'}
+            />
           </div>
         </div>
       </div>
@@ -122,10 +143,10 @@ export const MultiSelect: React.FC<MultiSelectProps & ClassName> = ({
               />
             )}
             {options
-              .filter((o) => {
+              .filter(o => {
                 return (
                   o.name.toLowerCase().includes(value.toLowerCase()) &&
-                  !selectedOptions.some((c) => c.value === o.value)
+                  !selectedOptions.some(c => c.value === o.value)
                 );
               })
               .map((o, id) => (
@@ -153,12 +174,19 @@ export type SelectProps = {
   | {
       isMultiple: true;
       selectedOptions?: ReadonlyArray<option>;
-      handleChange?: (value: ReadonlyArray<option>, additional?: { iterationKey?: string }) => void;
+      handleChange?: (
+        value: ReadonlyArray<option>,
+        additional?: { iterationKey?: string },
+      ) => void;
     }
 );
 
 export const Select: React.FC<
-  SelectProps & React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
+  SelectProps &
+    React.DetailedHTMLProps<
+      React.SelectHTMLAttributes<HTMLSelectElement>,
+      HTMLSelectElement
+    >
 > = ({ className, isMultiple, label, name, options, placeholder, ...props }) =>
   isMultiple === true ? (
     <MultiSelect

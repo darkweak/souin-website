@@ -65,9 +65,12 @@ const Register = () => {
       .create(values as UserAPI)
       .then(() => {
         push(redirection.redirectionLink);
-        pushToast({ text: 'Account created successfully !', variant: 'success' });
+        pushToast({
+          text: 'Account created successfully !',
+          variant: 'success',
+        });
       })
-      .catch((err) => {
+      .catch(err => {
         pushToast({ text: 'Account creation failed !', variant: 'danger' });
         throw err;
       });

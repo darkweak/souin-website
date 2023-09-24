@@ -24,7 +24,11 @@ const Configurations: NextPage<ConfigurationProps> = ({ configuration }) => {
       <div className="container m-auto">
         <JsonProvider
           configurationId={memoizedConfigurationId}
-          json={configuration?.configuration ? JSON.parse(configuration?.configuration) : undefined}
+          json={
+            configuration?.configuration
+              ? JSON.parse(configuration?.configuration)
+              : undefined
+          }
         >
           <Tabbar
             tabs={[
@@ -38,13 +42,21 @@ const Configurations: NextPage<ConfigurationProps> = ({ configuration }) => {
   );
 };
 
-Configurations.getInitialProps = (ctx: NextPageContext & { req: { cookies: Record<string, string> } }) => {
+Configurations.getInitialProps = (
+  ctx: NextPageContext & { req: { cookies: Record<string, string> } },
+) => {
   return new Configuration()
     .getOne({
       id: ctx.query.id,
-      ...(ctx?.req?.cookies ? { config: { headers: { Authorization: `Bearer ${ctx.req.cookies.token}` } } } : {}),
+      ...(ctx?.req?.cookies
+        ? {
+            config: {
+              headers: { Authorization: `Bearer ${ctx.req.cookies.token}` },
+            },
+          }
+        : {}),
     } as ConfigurationModel)
-    .then((configuration) => ({ configuration } as ConfigurationProps))
+    .then(configuration => ({ configuration } as ConfigurationProps))
     .catch(({ response: { status } }) => {
       if ([401, 403, 404].includes(status)) {
         ctx.res?.writeHead(301, { location: '/domains' });

@@ -4,7 +4,12 @@ import { Title } from 'components/common/text';
 import Navbar from 'components/layout/navbar';
 import { Footer } from 'components/layout/footer';
 import { Form } from 'components/common/form/forms';
-import { InputBase, MultiSelect, Select, Switch } from 'components/common/input';
+import {
+  InputBase,
+  MultiSelect,
+  Select,
+  Switch,
+} from 'components/common/input';
 import { BaseButton } from 'components/common/button';
 import { Domain } from 'actions';
 import { Auth, User } from 'actions/user';
@@ -14,7 +19,11 @@ type uiItemProps = {
   className?: string;
 };
 
-const UiItem: React.FC<React.PropsWithChildren<uiItemProps>> = ({ children, className = '', title }) => (
+const UiItem: React.FC<React.PropsWithChildren<uiItemProps>> = ({
+  children,
+  className = '',
+  title,
+}) => (
   <div className={`py-8 px-8 rounded-lg bg-gray-200 ${className}`}>
     <h1 className="text-5xl font-bold">{title}</h1>
     <div className="divider"></div>
@@ -54,9 +63,24 @@ const Ui: NextPage = () => {
         />
       </UiItem>
       <UiItem title="Form fields" className="grid gap-4">
-        <InputBase label="email" type="email" name="email" placeholder="john@doe.com" />
-        <InputBase label="password" type="password" name="password" placeholder="mypassword" />
-        <InputBase label="phone" type="phone" name="phone" placeholder="+33606060606" />
+        <InputBase
+          label="email"
+          type="email"
+          name="email"
+          placeholder="john@doe.com"
+        />
+        <InputBase
+          label="password"
+          type="password"
+          name="password"
+          placeholder="mypassword"
+        />
+        <InputBase
+          label="phone"
+          type="phone"
+          name="phone"
+          placeholder="+33606060606"
+        />
         <div className="flex flex-row">
           <Switch label="Unchecked" />
           <Switch label="Checked by default" defaultChecked />
@@ -120,7 +144,11 @@ const Ui: NextPage = () => {
             <BaseButton
               text={`Request many ${resource}`}
               onClick={() => {
-                instance.getMany().then((result) => setData({ ...data, [resource]: result.items }));
+                instance
+                  .getMany()
+                  .then(result =>
+                    setData({ ...data, [resource]: result.items }),
+                  );
               }}
             />
             <span>{JSON.stringify(data[resource])}</span>
@@ -130,7 +158,9 @@ const Ui: NextPage = () => {
           text="Request login"
           onClick={() => {
             // eslint-disable-next-line no-console
-            new Auth().login({ email: 'admin@test.fr', password: 'test' }).then(console.log);
+            new Auth()
+              .login({ email: 'admin@test.fr', password: 'test' })
+              .then(console.log);
           }}
         />
         <BaseButton

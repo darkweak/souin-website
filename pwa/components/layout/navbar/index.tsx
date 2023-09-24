@@ -1,7 +1,11 @@
 import React, { FC, useState } from 'react';
 import Link from 'next/link';
 import { useDispatchAuth, useIsAuth } from 'context';
-import { BaseButton, OutlinedButton, buttonType } from 'components/common/button';
+import {
+  BaseButton,
+  OutlinedButton,
+  buttonType,
+} from 'components/common/button';
 import { Blur } from 'components/common/block';
 import { ROUTES } from 'routes';
 import { Token } from 'storage';
@@ -31,7 +35,8 @@ const loggedIn: ReadonlyArray<commonElementProps> = [
   {
     text: 'Domains',
     link: '/domains',
-    isActive: (pathname) => pathname.includes('/domains') || pathname.includes('/configurations'),
+    isActive: pathname =>
+      pathname.includes('/domains') || pathname.includes('/configurations'),
   },
   {
     text: 'Profile',
@@ -80,7 +85,9 @@ const LoggedInItems: React.FC = () => (
   </>
 );
 
-const CommonNavbarItem: React.FC = () => <NavItem path="/terms-of-service">Terms of service</NavItem>;
+const CommonNavbarItem: React.FC = () => (
+  <NavItem path="/terms-of-service">Terms of service</NavItem>
+);
 
 const ResponsiveMenuItems: React.FC = () => {
   const connected = useIsAuth();
@@ -114,7 +121,10 @@ export const Navbar: FC = () => {
         <Headband />
         <div className="w-full navbar">
           <div className="flex-none lg:hidden absolute">
-            <label className="btn btn-square btn-ghost" onClick={() => setOpen(!open)}>
+            <label
+              className="btn btn-square btn-ghost"
+              onClick={() => setOpen(!open)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -122,13 +132,26 @@ export const Navbar: FC = () => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h7"
+                />
               </svg>
             </label>
           </div>
           <div className="navbar-start m-auto">
-            <Link href="/" className="text-2xl btn btn-ghost normal-case m-auto lg:m-0">
-              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="100%" viewBox="10 10 80 80">
+            <Link
+              href="/"
+              className="text-2xl btn btn-ghost normal-case m-auto lg:m-0"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                version="1.1"
+                height="100%"
+                viewBox="10 10 80 80"
+              >
                 <g>
                   <path
                     d="M 34.79 77.89 Q 90 70 50 50 Q 10 30 65.21 22.11"
@@ -164,7 +187,11 @@ export const Navbar: FC = () => {
             </ul>
           </div>
         </div>
-        <div className={`px-4 pb-2 flex ${!open ? 'h-0 hidden' : 'h-full'} lg:hidden`}>
+        <div
+          className={`px-4 pb-2 flex ${
+            !open ? 'h-0 hidden' : 'h-full'
+          } lg:hidden`}
+        >
           <ul className="menu gap-2">
             <ResponsiveMenuItems />
           </ul>

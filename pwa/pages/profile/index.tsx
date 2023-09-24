@@ -15,7 +15,9 @@ const Profile: NextPage = () => {
   const pushToast = usePushToast();
 
   useEffect(() => {
-    new User().getOne({ id: user_id } as UserModel).then((user) => user && setMe(user));
+    new User()
+      .getOne({ id: user_id } as UserModel)
+      .then(user => user && setMe(user));
   }, [user_id]);
 
   return (
@@ -24,7 +26,9 @@ const Profile: NextPage = () => {
       <div className="container m-auto">
         <Title title="Profile" />
         <div className="prose md:prose-xl py-8 max-w-full">
-          <h2 className="text-neutral-content">Welcome on your profile {username}</h2>
+          <h2 className="text-neutral-content">
+            Welcome on your profile {username}
+          </h2>
         </div>
         <div className="gap-8 flex flex-col lg:flex-row">
           <div className="w-full lg:w-1/2 h-fit">
@@ -50,14 +54,20 @@ const Profile: NextPage = () => {
                     type: 'password',
                   },
                 ]}
-                handleSubmit={(values) => {
+                handleSubmit={values => {
                   return new PasswordUpdater()
                     .patch(values as UserPasswordUpdate)
                     .then(() => {
-                      pushToast({ text: 'Your password has been updated!', variant: 'success' });
+                      pushToast({
+                        text: 'Your password has been updated!',
+                        variant: 'success',
+                      });
                     })
-                    .catch((err) => {
-                      pushToast({ text: 'We cannot update your password!', variant: 'danger' });
+                    .catch(err => {
+                      pushToast({
+                        text: 'We cannot update your password!',
+                        variant: 'danger',
+                      });
                       throw err;
                     });
                 }}
@@ -97,14 +107,20 @@ const Profile: NextPage = () => {
                     optional: true,
                   },
                 ]}
-                handleSubmit={(values) => {
+                handleSubmit={values => {
                   return new User()
                     .update(user_id, values as UserModel)
                     .then(() => {
-                      pushToast({ text: 'Your informations have been updated!', variant: 'success' });
+                      pushToast({
+                        text: 'Your informations have been updated!',
+                        variant: 'success',
+                      });
                     })
-                    .catch((err) => {
-                      pushToast({ text: 'We cannot update your informations!', variant: 'danger' });
+                    .catch(err => {
+                      pushToast({
+                        text: 'We cannot update your informations!',
+                        variant: 'danger',
+                      });
                       throw err;
                     });
                 }}

@@ -101,5 +101,7 @@ export const Icon: React.FC<iconProps> = ({ name, size, ...props }) => {
   if (!InternalIcon) {
     return null;
   }
-  return <InternalIcon size={size ? size : 48} className="text-info" {...props} />;
+  return (
+    <InternalIcon size={size ? size : 48} className="text-info" {...props} />
+  );
 };

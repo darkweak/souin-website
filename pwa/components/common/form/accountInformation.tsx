@@ -43,8 +43,20 @@ export const AccountInformation: React.FC = () => (
 
     <div className="divider"></div>
 
-    <InlineInput label="password" type="password" placeholder="mysecretpassword" />
-    <InlineInput label="new password" type="password" placeholder="mynewsecretpassword" />
-    <InlineInput label="confirm password" type="password" placeholder="mynewsecretpassword" />
+    <InlineInput
+      label="password"
+      type="password"
+      placeholder="mysecretpassword"
+    />
+    <InlineInput
+      label="new password"
+      type="password"
+      placeholder="mynewsecretpassword"
+    />
+    <InlineInput
+      label="confirm password"
+      type="password"
+      placeholder="mynewsecretpassword"
+    />
   </Form>
 );

@@ -1,7 +1,12 @@
 //import { AllowedIcons} from 'components/common/icon';
 import React from 'react';
 
-export type AllowedVariantPopup = 'alert-success' | 'alert-error' | 'alert-ghost' | 'alert-info' | 'alert-warning';
+export type AllowedVariantPopup =
+  | 'alert-success'
+  | 'alert-error'
+  | 'alert-ghost'
+  | 'alert-info'
+  | 'alert-warning';
 
 type popupProps = {
   text: string;
@@ -16,7 +21,12 @@ export const Popup: React.FC<popupProps> = ({ text, variant }) => (
 
 export const InformationalAlert: React.FC<{ text: string }> = ({ text }) => (
   <div className="alert">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      className="stroke-info shrink-0 w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { BaseButton } from 'components/common/button';
 import { Textarea } from 'components/common/input';
-import { defaultJson, useConfiguration, useDispatchConfiguration } from 'context';
+import {
+  defaultJson,
+  useConfiguration,
+  useDispatchConfiguration,
+} from 'context';
 
 const ReactJson = dynamic(import('react-json-view'), { ssr: false });
 
@@ -14,12 +18,18 @@ export const JsonEditor: React.FC = () => {
   const dispatchConfiguration = useDispatchConfiguration();
   const [plainMod, setPlainMod] = useState(false);
   const configurationValue = useConfiguration();
-  const [value, setValue] = useState(configurationValue ? beautify(configurationValue) : undefined);
+  const [value, setValue] = useState(
+    configurationValue ? beautify(configurationValue) : undefined,
+  );
 
   useEffect(() => {
     const timer = setTimeout(
-      () => dispatchConfiguration({ type: 'update', payload: value ? JSON.parse(value) : undefined }),
-      1000
+      () =>
+        dispatchConfiguration({
+          type: 'update',
+          payload: value ? JSON.parse(value) : undefined,
+        }),
+      1000,
     );
 
     return () => {

@@ -4,7 +4,10 @@ import { Group } from './group';
 import { InputHTMLAttributes } from 'react';
 import { OutlinedButton } from '../button';
 
-export type IteratorValue = Record<string, string | ReadonlyArray<string> | boolean | undefined>;
+export type IteratorValue = Record<
+  string,
+  string | ReadonlyArray<string> | boolean | undefined
+>;
 export type IteratorProps = {
   className?: string;
   iteration?: number;
@@ -29,7 +32,10 @@ export const Iterator: React.FC<IteratorProps> = ({
   values,
 }) => {
   const [iteration, setIteration] = useState(values.length);
-  const memoizedIterations = useMemo(() => [...new Array(iteration)], [iteration]);
+  const memoizedIterations = useMemo(
+    () => [...new Array(iteration)],
+    [iteration],
+  );
 
   return (
     <div className="form-control w-full gap-4">
@@ -56,20 +62,31 @@ export const Iterator: React.FC<IteratorProps> = ({
               <Group
                 className={className}
                 inputs={(inputsTemplate ?? []).map(
-                  (template) =>
+                  template =>
                     ({
                       ...template,
-                      defaultValue: values[idx]?.[(template as InputHTMLAttributes<HTMLInputElement>).name ?? ''],
-                      defaultChecked: values[idx]?.[(template as InputHTMLAttributes<HTMLInputElement>).name ?? ''],
+                      defaultValue:
+                        values[idx]?.[
+                          (template as InputHTMLAttributes<HTMLInputElement>)
+                            .name ?? ''
+                        ],
+                      defaultChecked:
+                        values[idx]?.[
+                          (template as InputHTMLAttributes<HTMLInputElement>)
+                            .name ?? ''
+                        ],
                       ...(template.type === 'select'
                         ? {
                             handleChange: (props: never) =>
                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               (template as any).handleChange(
                                 {
-                                  target: { iteration: idx, iterationKey: values[idx]?.key ?? idx },
+                                  target: {
+                                    iteration: idx,
+                                    iterationKey: values[idx]?.key ?? idx,
+                                  },
                                 },
-                                props
+                                props,
                               ),
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             ...((template as any).isMultiple
@@ -77,23 +94,33 @@ export const Iterator: React.FC<IteratorProps> = ({
                                   selectedOptions:
                                     (
                                       (values[idx]?.[
-                                        (template as InputHTMLAttributes<HTMLInputElement>).name ?? ''
+                                        (
+                                          template as InputHTMLAttributes<HTMLInputElement>
+                                        ).name ?? ''
                                       ] as ReadonlyArray<string>) ?? []
-                                    ).map((v) => ({ name: v, value: v })) ?? [],
+                                    ).map(v => ({ name: v, value: v })) ?? [],
                                 }
                               : {
                                   selectedOption:
-                                    values[idx]?.[(template as InputHTMLAttributes<HTMLInputElement>).name ?? ''],
+                                    values[idx]?.[
+                                      (
+                                        template as InputHTMLAttributes<HTMLInputElement>
+                                      ).name ?? ''
+                                    ],
                                 }),
                           }
                         : {
                             onChange: ({ target }) => {
                               template.onChange?.({
-                                target: { ...target, iteration: idx, iterationKey: values[idx]?.key ?? idx },
+                                target: {
+                                  ...target,
+                                  iteration: idx,
+                                  iterationKey: values[idx]?.key ?? idx,
+                                },
                               });
                             },
                           }),
-                    } as InputGuesserProps)
+                    } as InputGuesserProps),
                 )}
               />
             </div>
@@ -103,7 +130,7 @@ export const Iterator: React.FC<IteratorProps> = ({
       <div className="flex gap-4 flex-wrap md:flex-nowrap">
         <OutlinedButton
           text={`Add new item in ${name}`}
-          onClick={(ev) => {
+          onClick={ev => {
             ev.preventDefault();
             setIteration(iteration + 1);
           }}
@@ -112,7 +139,7 @@ export const Iterator: React.FC<IteratorProps> = ({
           <OutlinedButton
             variant="danger"
             text={`Delete all ${name}`}
-            onClick={(ev) => {
+            onClick={ev => {
               ev.preventDefault();
               onDelete();
             }}

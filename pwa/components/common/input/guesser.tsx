@@ -7,14 +7,21 @@ import { Iterator, IteratorProps } from './iterator';
 
 type Selectable = { type: 'select' } & (
   | MultiSelectProps
-  | (SelectProps & React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>)
+  | (SelectProps &
+      React.DetailedHTMLProps<
+        React.SelectHTMLAttributes<HTMLSelectElement>,
+        HTMLSelectElement
+      >)
 );
 export type Iterable = { type: 'iterator' } & IteratorProps;
 export type Groupable = { type: 'group' } & GroupProps;
 export type Switchable = { type: 'switch' } & SwitchProps;
 export type InputGuesserProps = Selectable | Switchable | Groupable | inputType;
 
-export const InputGuesser: React.FC<InputGuesserProps> = ({ type, ...props }) => {
+export const InputGuesser: React.FC<InputGuesserProps> = ({
+  type,
+  ...props
+}) => {
   switch (type) {
     case 'iterator':
       return <Iterator {...(props as Iterable)} />;

@@ -6,7 +6,12 @@ export type SwitchProps = {
   label: string;
 };
 
-export const Switch: React.FC<SwitchProps> = ({ className = '', defaultChecked = false, label, ...props }) => {
+export const Switch: React.FC<SwitchProps> = ({
+  className = '',
+  defaultChecked = false,
+  label,
+  ...props
+}) => {
   const [checked, setChecked] = useState(defaultChecked);
 
   return (

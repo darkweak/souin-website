@@ -41,14 +41,14 @@ const Signin = () => {
       inputs={inputs}
       buttonProps={button}
       redirectionInformation={redirection}
-      handleSubmit={(values) => {
+      handleSubmit={values => {
         return new Auth()
           .login(values as UserLogin)
           .then(() => {
             setConnected(true);
             pushToast({ text: 'Logged in successfully', variant: 'success' });
           })
-          .catch((err) => {
+          .catch(err => {
             pushToast({ text: 'Invalid credentials', variant: 'danger' });
             throw err;
           });

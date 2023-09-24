@@ -6,7 +6,10 @@ type NavItemProps = {
   isActive?: (path: string) => boolean;
   path?: string;
   withLink?: boolean;
-} & React.DetailedHTMLProps<React.LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>;
+} & React.DetailedHTMLProps<
+  React.LiHTMLAttributes<HTMLLIElement>,
+  HTMLLIElement
+>;
 
 export const NavItem: React.FC<React.PropsWithChildren<NavItemProps>> = ({
   children,

@@ -1,16 +1,43 @@
-import { defaultJson, useConfiguration, useDispatchConfiguration } from 'context';
-import React, { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from 'react';
-import { InputGuesser, InputGuesserProps, Iterable, IteratorValue, option } from '../input';
+import {
+  defaultJson,
+  useConfiguration,
+  useDispatchConfiguration,
+} from 'context';
+import React, {
+  BaseSyntheticEvent,
+  ChangeEvent,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  InputGuesser,
+  InputGuesserProps,
+  Iterable,
+  IteratorValue,
+  option,
+} from '../input';
 import { Form } from 'components/common/form/forms';
 import { InformationalAlert } from '../popup';
 
 const souinInternalKey = 'souin_internal_key';
 
-const allowedHTTPOptions: ReadonlyArray<option> = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT'].map((method) => ({
+const allowedHTTPOptions: ReadonlyArray<option> = [
+  'DELETE',
+  'GET',
+  'HEAD',
+  'PATCH',
+  'POST',
+  'PUT',
+].map(method => ({
   name: method,
   value: method,
 }));
-const modeOptions: ReadonlyArray<option> = ['Strict', 'Bypass request', 'Bypass response', 'Bypass'].map((mode) => ({
+const modeOptions: ReadonlyArray<option> = [
+  'Strict',
+  'Bypass request',
+  'Bypass response',
+  'Bypass',
+].map(mode => ({
   name: mode,
   value: mode.toLowerCase().replaceAll(' ', '_'),
 }));
@@ -19,7 +46,7 @@ const recursiveStateAccess = (
   key: string,
   current: Record<string, object>,
   value: object,
-  iterationKey?: string
+  iterationKey?: string,
 ): object => {
   if (key.includes('.')) {
     // eslint-disable-next-line prefer-const
@@ -30,7 +57,12 @@ const recursiveStateAccess = (
     return {
       ...(current ?? {}),
       ...{
-        [k]: recursiveStateAccess(nkey.join('.'), (current[k] ?? {}) as Record<string, object>, value, iterationKey),
+        [k]: recursiveStateAccess(
+          nkey.join('.'),
+          (current[k] ?? {}) as Record<string, object>,
+          value,
+          iterationKey,
+        ),
       },
     };
   }
@@ -57,7 +89,11 @@ const URLs: React.FC = ({ inputsTemplate, iteration, values }: any) => {
           <InputGuesser
             key={`${input.label}-${idx}`}
             {...input}
-            onChange={(v: ChangeEvent<(HTMLInputElement | HTMLSelectElement) & iterableChangeEvent>) => {
+            onChange={(
+              v: ChangeEvent<
+                (HTMLInputElement | HTMLSelectElement) & iterableChangeEvent
+              >,
+            ) => {
               v.target.iterationKey = value?.key;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (input as any).onChange({ ...v });
@@ -85,9 +121,15 @@ const CacheKeys: React.FC = ({ inputsTemplate, iteration, values }: any) => {
         <InputGuesser
           {...headersInput}
           handleChange={(options: ReadonlyArray<option>) =>
-            headersInput.handleChange({ target: { iterationKey: value?.key } }, options)
+            headersInput.handleChange(
+              { target: { iterationKey: value?.key } },
+              options,
+            )
           }
-          selectedOptions={value?.[headersInput.name]?.map((v: string) => ({ name: v, value: v }))}
+          selectedOptions={value?.[headersInput.name]?.map((v: string) => ({
+            name: v,
+            value: v,
+          }))}
         />
       </div>
       {restInput.map((input: InputGuesserProps, idx: number) => (
@@ -113,15 +155,24 @@ const CacheKeys: React.FC = ({ inputsTemplate, iteration, values }: any) => {
 export const UserFriendlyEditor: React.FC = () => {
   const configuration = useConfiguration();
   const dispatchConfiguration = useDispatchConfiguration();
-  const allowedHTTPSelectedOptions = (configuration?.allowed_http_cache ?? []).map((a) => ({ name: a, value: a }));
+  const allowedHTTPSelectedOptions = (
+    configuration?.allowed_http_cache ?? []
+  ).map(a => ({ name: a, value: a }));
   const [form, setForm] = useState(configuration);
-  const [allowedHTTP, setAllowedHTTP] = useState<ReadonlyArray<option>>(allowedHTTPSelectedOptions);
+  const [allowedHTTP, setAllowedHTTP] = useState<ReadonlyArray<option>>(
+    allowedHTTPSelectedOptions,
+  );
   const updateForm = (key: string, value: object, iterationKey?: string) => {
     if (iterationKey?.includes('.')) {
       key = key.replace(iterationKey, souinInternalKey);
     }
-    setForm((prevState) => {
-      return recursiveStateAccess(key, prevState as Record<string, object>, value, iterationKey);
+    setForm(prevState => {
+      return recursiveStateAccess(
+        key,
+        prevState as Record<string, object>,
+        value,
+        iterationKey,
+      );
     });
   };
 
@@ -129,7 +180,7 @@ export const UserFriendlyEditor: React.FC = () => {
     allowedHTTP.length &&
       updateForm(
         'allowed_http_cache',
-        allowedHTTP.map((o) => o.value)
+        allowedHTTP.map(o => o.value),
       );
   }, [allowedHTTP, setForm]);
 
@@ -169,9 +220,10 @@ export const UserFriendlyEditor: React.FC = () => {
               optional: true,
               label: 'basepath',
               defaultValue: configuration?.api?.basepath,
-              onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('api.basepath', value),
+              onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+                updateForm('api.basepath', value),
             },
-            ...['Prometheus', 'Souin'].map((api) => ({
+            ...['Prometheus', 'Souin'].map(api => ({
               type: 'group',
               label: api,
               inputs: [
@@ -180,17 +232,27 @@ export const UserFriendlyEditor: React.FC = () => {
                   label: 'enable',
                   className: 'm-auto',
                   name: `api.${api.toLowerCase()}.enabled`,
-                  defaultChecked: configuration?.api?.[api.toLowerCase() as 'souin' | 'prometheus']?.enabled,
+                  defaultChecked:
+                    configuration?.api?.[
+                      api.toLowerCase() as 'souin' | 'prometheus'
+                    ]?.enabled,
                   onChange: ({ target: { checked } }: BaseSyntheticEvent) =>
                     updateForm(`api.${api.toLowerCase()}.enabled`, checked),
                 },
                 {
                   name: `api.${api}.basepath`,
-                  placeholder: defaultJson.api?.[api.toLowerCase() as 'souin' | 'prometheus']?.basepath,
-                  defaultValue: configuration?.api?.[api.toLowerCase() as 'souin' | 'prometheus']?.basepath,
+                  placeholder:
+                    defaultJson.api?.[
+                      api.toLowerCase() as 'souin' | 'prometheus'
+                    ]?.basepath,
+                  defaultValue:
+                    configuration?.api?.[
+                      api.toLowerCase() as 'souin' | 'prometheus'
+                    ]?.basepath,
                   optional: true,
                   label: 'basepath',
-                  onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm(`api.${api}.basepath`, value),
+                  onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+                    updateForm(`api.${api}.basepath`, value),
                 },
               ],
             })),
@@ -202,7 +264,8 @@ export const UserFriendlyEditor: React.FC = () => {
           defaultValue: configuration?.cache_name,
           optional: true,
           label: 'Cache name',
-          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('cache_name', value),
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('cache_name', value),
         },
         {
           name: 'default_cache_control',
@@ -210,7 +273,8 @@ export const UserFriendlyEditor: React.FC = () => {
           defaultValue: configuration?.default_cache_control,
           optional: true,
           label: 'Default Cache-Control header',
-          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('default_cache_control', value),
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('default_cache_control', value),
         },
         {
           type: 'switch',
@@ -218,7 +282,8 @@ export const UserFriendlyEditor: React.FC = () => {
           defaultChecked: configuration?.distributed,
           className: '',
           name: 'distributed',
-          onChange: ({ target: { checked } }: BaseSyntheticEvent) => updateForm('distributed', checked),
+          onChange: ({ target: { checked } }: BaseSyntheticEvent) =>
+            updateForm('distributed', checked),
         },
         {
           options: modeOptions,
@@ -227,7 +292,8 @@ export const UserFriendlyEditor: React.FC = () => {
           placeholder: defaultJson.mode,
           defaultValue: configuration?.mode,
           label: 'Mode',
-          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('mode', value),
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('mode', value),
         },
         {
           type: 'group',
@@ -240,7 +306,8 @@ export const UserFriendlyEditor: React.FC = () => {
               defaultValue: configuration?.regex?.exclude,
               optional: true,
               label: 'exclude',
-              onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('regex.exclude', value),
+              onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+                updateForm('regex.exclude', value),
             },
           ],
         },
@@ -250,7 +317,8 @@ export const UserFriendlyEditor: React.FC = () => {
           defaultValue: configuration?.stale,
           optional: true,
           label: 'Stale duration',
-          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('stale', value),
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('stale', value),
         },
         {
           type: 'group',
@@ -262,7 +330,8 @@ export const UserFriendlyEditor: React.FC = () => {
               defaultValue: configuration?.timeout?.backend,
               optional: true,
               label: 'backend',
-              onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('timeout.backend', value),
+              onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+                updateForm('timeout.backend', value),
             },
             {
               name: 'timeout.cache',
@@ -270,7 +339,8 @@ export const UserFriendlyEditor: React.FC = () => {
               defaultValue: configuration?.timeout?.cache,
               optional: true,
               label: 'cache',
-              onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('timeout.cache', value),
+              onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+                updateForm('timeout.cache', value),
             },
           ],
         },
@@ -280,7 +350,8 @@ export const UserFriendlyEditor: React.FC = () => {
           defaultValue: configuration?.ttl,
           optional: true,
           label: 'Time-to-live duration',
-          onChange: ({ target: { value } }: BaseSyntheticEvent) => updateForm('ttl', value),
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('ttl', value),
         },
         {
           type: 'iterator',
@@ -292,7 +363,9 @@ export const UserFriendlyEditor: React.FC = () => {
               name: 'key',
               placeholder: '.*\\.css',
               label: 'URL pattern to match',
-              onChange: ({ target: { iteration, value } }: BaseSyntheticEvent) =>
+              onChange: ({
+                target: { iteration, value },
+              }: BaseSyntheticEvent) =>
                 updateForm(`urls.${iteration}.key`, value),
             },
             {
@@ -300,7 +373,9 @@ export const UserFriendlyEditor: React.FC = () => {
               placeholder: defaultJson.ttl,
               optional: true,
               label: 'time-to-live duration',
-              onChange: ({ target: { iterationKey, value } }: BaseSyntheticEvent) =>
+              onChange: ({
+                target: { iterationKey, value },
+              }: BaseSyntheticEvent) =>
                 updateForm(`urls.${iterationKey}.ttl`, value),
             },
             {
@@ -308,7 +383,9 @@ export const UserFriendlyEditor: React.FC = () => {
               placeholder: defaultJson.default_cache_control,
               optional: true,
               label: 'default Cache-Control header',
-              onChange: ({ target: { iterationKey, value } }: BaseSyntheticEvent) =>
+              onChange: ({
+                target: { iterationKey, value },
+              }: BaseSyntheticEvent) =>
                 updateForm(`urls.${iterationKey}.default_cache_control`, value),
             },
           ] as ReadonlyArray<InputGuesserProps>,
@@ -318,7 +395,7 @@ export const UserFriendlyEditor: React.FC = () => {
               ({
                 key,
                 ...values,
-              } as IteratorValue)
+              } as IteratorValue),
           ),
         } as Iterable,
         {
@@ -332,7 +409,9 @@ export const UserFriendlyEditor: React.FC = () => {
               placeholder: '.*\\.css',
               className: 'w-full',
               label: 'URL pattern to match',
-              onChange: ({ target: { iteration, value } }: BaseSyntheticEvent) =>
+              onChange: ({
+                target: { iteration, value },
+              }: BaseSyntheticEvent) =>
                 updateForm(`cache_keys.${iteration}.key`, value),
             },
             {
@@ -345,11 +424,14 @@ export const UserFriendlyEditor: React.FC = () => {
               options: [],
               type: 'select',
               label: 'Headers to match',
-              handleChange: ({ target: { iterationKey } }: BaseSyntheticEvent, values: ReadonlyArray<option>) =>
+              handleChange: (
+                { target: { iterationKey } }: BaseSyntheticEvent,
+                values: ReadonlyArray<option>,
+              ) =>
                 updateForm(
                   `cache_keys.${iterationKey}.headers`,
-                  values.map((v) => v.value),
-                  iterationKey
+                  values.map(v => v.value),
+                  iterationKey,
                 ),
             },
             {
@@ -357,40 +439,70 @@ export const UserFriendlyEditor: React.FC = () => {
               label: 'Disable body',
               className: '',
               name: 'disable_body',
-              onChange: ({ target: { iterationKey, checked } }: BaseSyntheticEvent) =>
-                updateForm(`cache_keys.${iterationKey}.disable_body`, checked, iterationKey),
+              onChange: ({
+                target: { iterationKey, checked },
+              }: BaseSyntheticEvent) =>
+                updateForm(
+                  `cache_keys.${iterationKey}.disable_body`,
+                  checked,
+                  iterationKey,
+                ),
             },
             {
               type: 'switch',
               label: 'Disable host',
               className: '',
               name: 'disable_host',
-              onChange: ({ target: { iterationKey, checked } }: BaseSyntheticEvent) =>
-                updateForm(`cache_keys.${iterationKey}.disable_host`, checked, iterationKey),
+              onChange: ({
+                target: { iterationKey, checked },
+              }: BaseSyntheticEvent) =>
+                updateForm(
+                  `cache_keys.${iterationKey}.disable_host`,
+                  checked,
+                  iterationKey,
+                ),
             },
             {
               type: 'switch',
               label: 'Disable method',
               className: '',
               name: 'disable_method',
-              onChange: ({ target: { iterationKey, checked } }: BaseSyntheticEvent) =>
-                updateForm(`cache_keys.${iterationKey}.disable_method`, checked, iterationKey),
+              onChange: ({
+                target: { iterationKey, checked },
+              }: BaseSyntheticEvent) =>
+                updateForm(
+                  `cache_keys.${iterationKey}.disable_method`,
+                  checked,
+                  iterationKey,
+                ),
             },
             {
               type: 'switch',
               label: 'Disable query',
               className: '',
               name: 'disable_query',
-              onChange: ({ target: { iterationKey, checked } }: BaseSyntheticEvent) =>
-                updateForm(`cache_keys.${iterationKey}.disable_query`, checked, iterationKey),
+              onChange: ({
+                target: { iterationKey, checked },
+              }: BaseSyntheticEvent) =>
+                updateForm(
+                  `cache_keys.${iterationKey}.disable_query`,
+                  checked,
+                  iterationKey,
+                ),
             },
             {
               type: 'switch',
               label: 'Hide key',
               className: '',
               name: 'hide',
-              onChange: ({ target: { iterationKey, checked } }: BaseSyntheticEvent) =>
-                updateForm(`cache_keys.${iterationKey}.hide`, checked, iterationKey),
+              onChange: ({
+                target: { iterationKey, checked },
+              }: BaseSyntheticEvent) =>
+                updateForm(
+                  `cache_keys.${iterationKey}.hide`,
+                  checked,
+                  iterationKey,
+                ),
             },
           ] as ReadonlyArray<InputGuesserProps>,
           Template: CacheKeys,
@@ -399,7 +511,7 @@ export const UserFriendlyEditor: React.FC = () => {
               ({
                 key,
                 ...values,
-              } as IteratorValue)
+              } as IteratorValue),
           ),
         } as Iterable,
       ]}

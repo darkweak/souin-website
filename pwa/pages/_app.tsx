@@ -7,7 +7,10 @@ import { NextPage, NextPageContext } from 'next';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ToastProvider>
-      <AuthProviders authenticated={pageProps.authenticated} requestToken={pageProps.token}>
+      <AuthProviders
+        authenticated={pageProps.authenticated}
+        requestToken={pageProps.token}
+      >
         <Layout>
           <Component {...pageProps} />
         </Layout>
@@ -16,17 +19,25 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-MyApp.getInitialProps = async ({ Component, ctx }: { Component: NextPage; ctx: NextPageContext }) => {
+MyApp.getInitialProps = async ({
+  Component,
+  ctx,
+}: {
+  Component: NextPage;
+  ctx: NextPageContext;
+}) => {
   let authenticated = false;
   let token;
 
   const { req } = ctx;
   if (req) {
-    const cookies = req.headers.cookie?.split(';').reduce((acc: Record<string, string>, current) => {
-      const [name, value] = current.split('=');
-      acc[name.trim()] = value.trim();
-      return acc;
-    }, {});
+    const cookies = req.headers.cookie
+      ?.split(';')
+      .reduce((acc: Record<string, string>, current) => {
+        const [name, value] = current.split('=');
+        acc[name.trim()] = value.trim();
+        return acc;
+      }, {});
 
     token = cookies?.token;
     authenticated = !!cookies?.token;

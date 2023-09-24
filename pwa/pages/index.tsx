@@ -27,12 +27,23 @@ const Home: NextPage = () => {
               title="The free Saas HTTP cache you've been waiting for"
             />
             <p className="text-left font-bold">
-              Souin is an intuitive HTTP cache management application that enables servers to cache web data, improving
-              website speed and reducing bandwidth usage. With it, you can easily configure and manage cache policies,
-              ensuring fast and reliable content delivery to your users. Plus, as an open source application, Souin
-              provides flexibility and transparency, allowing for customizations and contributions from the community.
+              Souin is an intuitive HTTP cache management application that
+              enables servers to cache web data, improving website speed and
+              reducing bandwidth usage. With it, you can easily configure and
+              manage cache policies, ensuring fast and reliable content delivery
+              to your users. Plus, as an open source application, Souin provides
+              flexibility and transparency, allowing for customizations and
+              contributions from the community.
             </p>
-            <BaseButton variant='ghost' className="xl:btn-lg bg-gradient-to-r from-accent-focus to-info border-none" text="Try it now" icon="arrow-right" position="right" onClick={() => push(ROUTES.REGISTER)} />
+            <BaseButton
+              variant="ghost"
+              className="xl:btn-lg bg-gradient-to-r from-accent-focus to-info border-none"
+              text="Try it now"
+              icon="arrow-right"
+              position="right"
+              onClick={() => push(ROUTES.REGISTER)}
+            />
+            ;
           </Blur>
         </div>
       </div>
@@ -44,18 +55,29 @@ const Home: NextPage = () => {
         <div className="py-16 grid gap-y-8 px-4">
           <Title title="Open-source" />
           <p>
-            Souin is built by and for the community. It&apos;s code is totally open-source available on the github
-            repository{' '}
+            Souin is built by and for the community. It&apos;s code is totally
+            open-source available on the github repository{' '}
             <Link target="_blank" href="https://github.com/darkweak/souin">
               github.com/darkweak/souin
             </Link>
-            . Everyone can access, audit and explore the code. Feel free to open a PR or issues if you think some parts
-            are not working as expected, if you encounter some troubles to configure it or if the doc is not clear
-            enough. There are no hidden part, or enterprise edition because it doesn&apos;t make sense to make money on
-            the back of the contributors and all features in Souin will stay free forever.
+            . Everyone can access, audit and explore the code. Feel free to open
+            a PR or issues if you think some parts are not working as expected,
+            if you encounter some troubles to configure it or if the doc is not
+            clear enough. There are no hidden part, or enterprise edition
+            because it doesn&apos;t make sense to make money on the back of the
+            contributors and all features in Souin will stay free forever.
           </p>
-          <Link target="_blank" href="https://github.com/darkweak/souin" className="m-auto">
-            <OutlinedButton variant="ghost" icon="github" text="Join the project" className="btn-lg" />
+          <Link
+            target="_blank"
+            href="https://github.com/darkweak/souin"
+            className="m-auto"
+          >
+            <OutlinedButton
+              variant="ghost"
+              icon="github"
+              text="Join the project"
+              className="btn-lg"
+            />
           </Link>
         </div>
       </div>

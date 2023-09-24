@@ -8,9 +8,14 @@ export type inputType = {
   inputClassName?: string;
   variant?: AllowedVariant;
   subText?: string;
-} & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+} & React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
 
-export const InputBaseWithoutLabel: React.FC<Omit<inputType, 'label'>> = (props) => <InputBase id="abcd" {...props} />;
+export const InputBaseWithoutLabel: React.FC<
+  Omit<inputType, 'label'>
+> = props => <InputBase id="abcd" {...props} />;
 
 export const InputBase: React.FC<inputType> = ({
   className = '',

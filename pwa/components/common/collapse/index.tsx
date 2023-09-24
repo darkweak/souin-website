@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export const Collapse: React.FC<React.PropsWithChildren<{ title: React.ReactNode }>> = ({ children, title }) => {
+export const Collapse: React.FC<
+  React.PropsWithChildren<{ title: React.ReactNode }>
+> = ({ children, title }) => {
   const [open, setOpen] = useState(false);
 
   return (
