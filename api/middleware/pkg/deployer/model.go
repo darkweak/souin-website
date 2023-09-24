@@ -84,12 +84,11 @@ func getCaddyfileValues(value map[string]interface{}) string {
 	acc := ""
 
 	for k, v := range value {
-		fmt.Println(k, v)
 		s := parseValue(k, v)
 		if s != "" {
-			acc += "\n"+s
+			acc += "\n          "+s
 		}
 	}
 
-	return acc
+	return fmt.Sprintf("{%s\n        }", acc)
 }

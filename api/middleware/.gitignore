@@ -1,3 +1,6 @@
 pkg/deployer/semaphore/inventory*
 pkg/deployer/semaphore/config.stdin
 pkg/deployer/semaphore/playbooks/Caddyfile*
+pkg/deployer/semaphore/playbooks/Caddyfile*
+pkg/deployer/semaphore/.ansible
+pkg/deployer/semaphore/repository*

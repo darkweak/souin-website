@@ -83,13 +83,13 @@ type createTaskPayload struct {
 	Subdomains    string
 	ProjectId     string
 	TemplateId    string
-	Configuration string
+	Environment string
 }
 
 const createTaskPayloadTemplate = `{
     "template_id": {{ .TemplateId }},
     "project_id": {{ .ProjectId }},
-    "environment": "{\"ANSIBLE_HOST_KEY_CHECKING\": \"False\",\"ANSIBLE_CONFIG\": \"/tmp/semaphore/ansible.cfg\",\"SUBDOMAINS\": {{ .Subdomains }},\"CURRENT_DOMAIN\": \"{{ .Domain }}\",,\"CONFIGURATION\": \"{{ .Configuration }}\",\"LABEL\": \"{{ .Name }}\"\n}"
+    "environment": {{ .Environment }}
 }`
 
 func (d *deployer) deploy(domain string, subs map[string]api.Configuration) (err error) {

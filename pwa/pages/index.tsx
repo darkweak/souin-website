@@ -43,7 +43,6 @@ const Home: NextPage = () => {
               position="right"
               onClick={() => push(ROUTES.REGISTER)}
             />
-            ;
           </Blur>
         </div>
       </div>

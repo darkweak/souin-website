@@ -11,23 +11,35 @@ import (
 	"text/template"
 )
 
-func formatSubDomains(subs map[string]api.Configuration) string {
-	orderedByIP := make(map[string][]string)
-
-	for subName, sub := range subs {
-		if val, ok := orderedByIP[sub.IP]; !ok || len(val) == 0 {
-			orderedByIP[sub.IP] = []string{subName}
-			continue
+func getEscapedEnvironment(domain string, subs map[string]api.Configuration) string {
+	for i, c := range subs {
+		var config map[string]interface{}
+		if json.Unmarshal([]byte(c.Configuration), &config) == nil {
+			sub := subs[i]
+			sub.Configuration = getCaddyfileValues(config)
+			subs[i] = sub
 		}
-		orderedByIP[sub.IP] = append(orderedByIP[sub.IP], subName)
 	}
 
-	formatedSubdomains := ""
-	for ip, sub := range orderedByIP {
-		formatedSubdomains += `\"` + ip + `\": [\"` + strings.Join(sub, `\",\"`) + `\"],`
-	}
+	environment, _ := json.Marshal(Environment{
+		Cd: domain,
+		Config: "/tmp/semaphore/ansible.cfg",
+		Configuration: subs,
+		Kc: "False",
+		Label: strings.ReplaceAll(domain, ".", "_"),
+	})
 
-	return "{" + strings.TrimSuffix(formatedSubdomains, ",") + "}"
+	environment, _ = json.Marshal(string(environment))
+
+	return string(environment)
+}
+
+type Environment struct {
+	Cd string `json:"CURRENT_DOMAIN"`
+	Config string `json:"ANSIBLE_CONFIG"`
+	Configuration map[string]api.Configuration `json:"CONFIGURATION"`
+	Kc string `json:"ANSIBLE_HOST_KEY_CHECKING"`
+	Label string `json:"LABEL"`
 }
 
 func (d *deployer) insertTask(domain string, subs map[string]api.Configuration) error {
@@ -36,16 +48,11 @@ func (d *deployer) insertTask(domain string, subs map[string]api.Configuration) 
 		return err
 	}
 
-	subsString, _ := json.Marshal(subs)
-
 	var buf bytes.Buffer
 	tpl.Execute(&buf, createTaskPayload{
 		ProjectId:     d.projectId,
 		TemplateId:    d.templateId,
-		Name:          strings.ReplaceAll(domain, ".", "_"),
-		Domain:        domain,
-		Subdomains:    formatSubDomains(subs),
-		Configuration: string(subsString),
+		Environment:   getEscapedEnvironment(domain, subs),
 	})
 	fmt.Println(buf.String())
 	rq, err := d.getAuthRequest("/project/"+d.projectId+"/tasks", http.MethodPost, &buf)
@@ -60,7 +67,6 @@ func (d *deployer) insertTask(domain string, subs map[string]api.Configuration) 
 	}
 
 	if res.StatusCode != http.StatusCreated {
-		fmt.Printf("%#v\n", res)
 		return errors.New("impossible to create the task")
 	}
 
