@@ -20,19 +20,19 @@ func parseValue(key string, value interface{}) string {
 		for apiK, apiV := range apiValues {
 			switch(apiK) {
 			case "basepath":
-				s += fmt.Sprintf("\n  basepath %s", apiV.(string))
+				s += fmt.Sprintf("\n        basepath %s", apiV.(string))
 			case "souin", "prometheus":
 				if av, ok := apiV.(map[string]interface{}); ok {
 					if a, o := av["enabled"]; o && a != nil && a.(bool) {
 						hasAPIEndpoint = true
-						s += "\n  "+apiK
+						s += "\n        "+apiK
 					}
 				}
 			}
 		}
 
 		if hasAPIEndpoint {
-			return fmt.Sprintf("api {%s\n}", s)
+			return fmt.Sprintf("api {%s\n      }", s)
 		}
 	case "regex":
 		s := ""
@@ -42,12 +42,12 @@ func parseValue(key string, value interface{}) string {
 			switch(regexpK) {
 			case "exclude":
 				hasRegexp = true
-				s += fmt.Sprintf("\n  exclude %s", regexpV.(string))
+				s += fmt.Sprintf("\n        exclude %s", regexpV.(string))
 			}
 		}
 
 		if hasRegexp {
-			return fmt.Sprintf("regex {%s\n}", s)
+			return fmt.Sprintf("regex {%s\n      }", s)
 		}
 	case "cache_name", "default_cache_control", "mode", "ttl", "stale":
 		return fmt.Sprintf("%s %s", key, value.(string))
@@ -63,20 +63,20 @@ func parseValue(key string, value interface{}) string {
 			for keyK, keyV := range ckVal.(map[string]interface{}) {
 				switch (keyK) {
 				case "disable_body", "disable_host", "disable_method", "disable_query":
-					c += "\n      "+keyK
+					c += "\n          "+keyK
 				case "headers":
 					headers := []string{}
 					for _, v := range keyV.([]interface{}) {
 						headers = append(headers, v.(string))
 					}
-					c += fmt.Sprintf("\n    headers %s", strings.Join(headers, " "))
+					c += fmt.Sprintf("\n          headers %s", strings.Join(headers, " "))
 				}
 			}
 			
-			s += fmt.Sprintf("\n  %s {%s\n  }", ckKey, c)
+			s += fmt.Sprintf("\n  %s {%s\n        }", ckKey, c)
 		}
 
-		return fmt.Sprintf("cache_keys {%s\n}", s)
+		return fmt.Sprintf("cache_keys {%s\n      }", s)
 	}
 
 	return ""
