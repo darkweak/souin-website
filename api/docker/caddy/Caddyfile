@@ -49,7 +49,7 @@ route {
 
     souin_middleware_handler
 
-    php_fastcgi unix//var/run/php/php-fpm.sock
+    php_fastcgi php:9000
     encode zstd gzip
     file_server
 }

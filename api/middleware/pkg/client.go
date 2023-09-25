@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const path = "/var/run/php/php-fpm.sock"
+const path = "php:9000"
 
 const root = "/srv/app/public"
 const scriptName = "/index.php"
@@ -106,7 +106,7 @@ var payload, _ = json.Marshal(body{
 
 func validateDomain(domainIRI string) map[string]api.Configuration {
 	r, _ := http.NewRequest(http.MethodPatch, "/", nil)
-	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
+	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("tcp", path))()
 	if err != nil {
 		return map[string]api.Configuration{}
 	}
@@ -152,7 +152,7 @@ func (c *customRs) WriteHeader(code int) {
 }
 
 func getClient(maxRetry int, logger *zap.Logger) (gofast.Client, error) {
-	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
+	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("tcp", path))()
 
 	if err != nil {
 		logger.Sugar().Debugf("Impossible to create a new CGI client: %#v", err)
@@ -197,7 +197,7 @@ func RetrieveDomains(logger *zap.Logger) []api.Domain {
 
 func RetrieveDomain(domainIRI string) api.Domain {
 	r, _ := http.NewRequest(http.MethodGet, "/", nil)
-	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("unix", path))()
+	client, err := gofast.SimpleClientFactory(gofast.SimpleConnFactory("tcp", path))()
 	if err != nil {
 		return api.Domain{}
 	}
