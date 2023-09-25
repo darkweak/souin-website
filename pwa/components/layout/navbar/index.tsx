@@ -86,7 +86,19 @@ const LoggedInItems: React.FC = () => (
 );
 
 const CommonNavbarItem: React.FC = () => (
-  <NavItem path="/terms-of-service">Terms of service</NavItem>
+  <>
+    <li className="w-fit">
+      <Link
+        href="https://docs.souin.io/docs"
+        className={`text-lg my-auto`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Documentation
+      </Link>
+    </li>
+    <NavItem path="/terms-of-service">Terms of service</NavItem>
+  </>
 );
 
 const ResponsiveMenuItems: React.FC = () => {

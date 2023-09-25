@@ -7,7 +7,12 @@ import axios, {
 } from 'axios';
 import { APIPlatformSerializer } from 'serializers/api-platform';
 import getConfig from 'next/config';
-import { APIList, APIListResult, APISingleResult, GenericAPIObject } from 'model';
+import {
+  APIList,
+  APIListResult,
+  APISingleResult,
+  GenericAPIObject,
+} from 'model';
 import { SerializerInterface } from 'serializers/interface';
 import { Token } from 'storage';
 import { ROUTES } from 'routes';
@@ -57,7 +62,7 @@ export abstract class API {
       },
       ...(config ?? {}),
     });
-    instance.interceptors.request.use((r) => {
+    instance.interceptors.request.use(r => {
       const token = new Token().get();
       if (token) {
         r.headers['Authorization'] = `Bearer ${token}`;
@@ -65,10 +70,12 @@ export abstract class API {
       return r;
     });
     instance.interceptors.response.use(
-      (r) => r,
-      (r) => {
+      r => r,
+      r => {
         if (
-          (!r.response || 401 === r.response.status || 403 === r.response.status) &&
+          (!r.response ||
+            401 === r.response.status ||
+            403 === r.response.status) &&
           !r.request.responseURL.includes('/auth')
         ) {
           new Token().delete();
@@ -77,58 +84,91 @@ export abstract class API {
           }
         }
         return Promise.reject(r);
-      }
+      },
     );
 
     return instance;
   }
 
-  async deleteRequest({ endpoint }: EndpointInterface = {}): Promise<AxiosResponse> {
+  async deleteRequest({
+    endpoint,
+  }: EndpointInterface = {}): Promise<AxiosResponse> {
     return this.request().delete(`${this.endpoint}${endpoint || ''}`);
   }
 
-  async getRequest({ config, endpoint = '' }: ConfigInterface & EndpointInterface = {}): Promise<AxiosResponse> {
+  async getRequest({
+    config,
+    endpoint = '',
+  }: ConfigInterface & EndpointInterface = {}): Promise<AxiosResponse> {
     return this.request(config).get(
       `${this.endpoint}${endpoint}?${
         new URLSearchParams({
           ...this.pagination,
           ...this.filter,
         }).toString() || ''
-      }`
+      }`,
     );
   }
 
-  async patchRequest({ data, endpoint = '' }: AxiosRequestConfig & EndpointInterface = {}): Promise<AxiosResponse> {
-    return this.request().patch(`${this.endpoint}${endpoint}`, JSON.stringify(data), {
-      headers: {
-        'Content-Type': 'application/merge-patch+json',
+  async patchRequest({
+    data,
+    endpoint = '',
+  }: AxiosRequestConfig & EndpointInterface = {}): Promise<AxiosResponse> {
+    return this.request().patch(
+      `${this.endpoint}${endpoint}`,
+      JSON.stringify(data),
+      {
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
       },
-    });
+    );
   }
 
   async postRequest({
     config = {},
     data,
     endpoint = '',
-  }: AxiosRequestConfig & EndpointInterface & ConfigInterface = {}): Promise<AxiosResponse> {
+  }: AxiosRequestConfig &
+    EndpointInterface &
+    ConfigInterface = {}): Promise<AxiosResponse> {
     return this.request().post(`${this.endpoint}${endpoint}`, data, config);
   }
 
-  async putRequest({ data, endpoint }: AxiosRequestConfig & EndpointInterface = {}): Promise<AxiosResponse> {
-    return this.request().put(`${this.endpoint}${endpoint || ''}`, JSON.stringify(data));
+  async putRequest({
+    data,
+    endpoint,
+  }: AxiosRequestConfig & EndpointInterface = {}): Promise<AxiosResponse> {
+    return this.request().put(
+      `${this.endpoint}${endpoint || ''}`,
+      JSON.stringify(data),
+    );
   }
 }
 
-export class APIPlatform<T extends APISingleResult, U extends GenericAPIObject<T>> extends API {
+export class APIPlatform<
+  T extends APISingleResult,
+  U extends GenericAPIObject<T>,
+> extends API {
   protected serializer: SerializerInterface<T> = new APIPlatformSerializer();
 
-  getBaseUrl = (): string => serverRuntimeConfig.API_URL || publicRuntimeConfig.API_URL;
+  getBaseUrl = (): string =>
+    serverRuntimeConfig.API_URL || publicRuntimeConfig.API_URL;
 
-  getMany({ config, depth }: DepthLoaderInterface & ConfigInterface = {}): Promise<APIList<T>> {
+  getMany({
+    config,
+    depth,
+  }: DepthLoaderInterface & ConfigInterface = {}): Promise<APIList<T>> {
     return this.getRequest({ config })
       .then(({ data }: { data: APIListResult<T> }) => data)
-      .then((data) =>
-        Promise.all([this.serializer.serializeMany(data['hydra:member'], { config, depth }), data['hydra:totalItems']])
+      .then(data =>
+        Promise.all([
+          this.serializer.serializeMany(data['hydra:member'], {
+            config,
+            depth,
+          }),
+          data['hydra:totalItems'],
+        ]),
       )
       .then(([items, total]) => ({
         items,
@@ -137,7 +177,9 @@ export class APIPlatform<T extends APISingleResult, U extends GenericAPIObject<T
   }
 
   create(data: U) {
-    return this.postRequest({ data }).then(({ data: v }) => this.serializer.serialize(v));
+    return this.postRequest({ data }).then(({ data: v }) =>
+      this.serializer.serialize(v),
+    );
   }
 
   getOne({ config, depth, id }: DepthLoaderInterface & ConfigInterface & T) {
@@ -147,7 +189,9 @@ export class APIPlatform<T extends APISingleResult, U extends GenericAPIObject<T
   }
 
   update(id: string, data: Partial<U>) {
-    return this.patchRequest({ data, endpoint: `/${id}` }).then(({ data: v }) => this.serializer.serialize(v));
+    return this.patchRequest({ data, endpoint: `/${id}` }).then(({ data: v }) =>
+      this.serializer.serialize(v),
+    );
   }
 
   delete(id: string) {

@@ -43,14 +43,13 @@ class RegistrationSubscriber implements EventSubscriberInterface
 
     public function handleRegistration(ViewEvent $event): void
     {
-
         if (!($event->getControllerResult() instanceof User && Request::METHOD_POST === $event->getRequest()->getMethod())) {
             return;
         }
 
         /** @var User $user */
         $user = $event->getControllerResult();
-        $token = hash('sha512', $user->getEmail() . (new \DateTime())->format('Y-m-d H:i:s'));
+        $token = hash('sha512', $user->getEmail().(new \DateTime())->format('Y-m-d H:i:s'));
 
         $user->setToken($token);
 

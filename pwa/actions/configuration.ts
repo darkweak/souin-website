@@ -4,5 +4,6 @@ import { ConfigurationSerializer, SerializerInterface } from 'serializers';
 
 export class Configuration extends APIPlatform<ConfigurationModel, ConfigurationAPI> {
   endpoint = '/configurations';
-  protected serializer: SerializerInterface<ConfigurationModel> = new ConfigurationSerializer();
+  protected serializer: SerializerInterface<ConfigurationModel> =
+    new ConfigurationSerializer();
 }

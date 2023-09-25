@@ -34,8 +34,8 @@ final class Domains implements QueryCollectionExtensionInterface
         }
 
         if (
-            $this->security->isGranted('ROLE_ADMIN') ||
-            ($this->request->getMainRequest()?->getHost() === \getenv('TRUSTED_MIDDLEWARE') && \is_null($this->security->getUser()))
+            $this->security->isGranted('ROLE_ADMIN')
+            || ($this->request->getMainRequest()?->getHost() === \getenv('TRUSTED_MIDDLEWARE') && \is_null($this->security->getUser()))
         ) {
             return;
         }

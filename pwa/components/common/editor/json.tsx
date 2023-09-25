@@ -29,7 +29,7 @@ export const JsonEditor: React.FC = () => {
           type: 'update',
           payload: value ? JSON.parse(value) : undefined,
         }),
-      1000,
+      2500,
     );
 
     return () => {

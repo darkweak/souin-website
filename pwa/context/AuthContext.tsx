@@ -26,20 +26,26 @@ type AuthProviderProps = {
   requestToken?: string;
 };
 
-export const AuthProviders: React.FC<React.PropsWithChildren<AuthProviderProps>> = ({
-  authenticated,
-  children,
-  requestToken,
-}) => {
-  const [connected, setConnected] = useState(authenticated || !!new Token().get());
-  const [token, setToken] = useState(requestToken || new Token().get() || undefined);
+export const AuthProviders: React.FC<
+  React.PropsWithChildren<AuthProviderProps>
+> = ({ authenticated, children, requestToken }) => {
+  const [connected, setConnected] = useState(
+    authenticated || !!new Token().get(),
+  );
+  const [token, setToken] = useState(
+    requestToken || new Token().get() || undefined,
+  );
   useEffect(() => {
     if (new Token().get()) {
       setToken(new Token().get());
     }
   }, [connected]);
 
-  return <AuthContext.Provider value={{ connected, setConnected, setToken, token }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ connected, setConnected, setToken, token }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useIsAuth = () => {

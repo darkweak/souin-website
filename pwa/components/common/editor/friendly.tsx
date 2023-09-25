@@ -187,7 +187,7 @@ export const UserFriendlyEditor: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatchConfiguration({ type: 'update', payload: form ?? {} });
-    }, 500);
+    }, 2500);
 
     return () => {
       clearTimeout(timer);
@@ -284,6 +284,15 @@ export const UserFriendlyEditor: React.FC = () => {
           name: 'distributed',
           onChange: ({ target: { checked } }: BaseSyntheticEvent) =>
             updateForm('distributed', checked),
+        },
+        {
+          name: 'max_cachable_body_bytes',
+          placeholder: '1024',
+          defaultValue: configuration?.max_cachable_body_bytes,
+          optional: true,
+          label: 'Max body bytes to be cached',
+          onChange: ({ target: { value } }: BaseSyntheticEvent) =>
+            updateForm('max_cachable_body_bytes', value),
         },
         {
           options: modeOptions,

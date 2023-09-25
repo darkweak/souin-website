@@ -49,4 +49,8 @@ export type GenericAPIObject<T> = Omit<T, keyof APISingleResult>;
 export type UserAPI = GenericAPIObject<User>;
 export type ConfigurationAPI = GenericAPIObject<Configuration>;
 export type DomainAPI = GenericAPIObject<Domain>;
-export type CreatableAPIResource = UserAPI | ConfigurationAPI | DomainAPI | UserPasswordUpdate;
+export type CreatableAPIResource =
+  | UserAPI
+  | ConfigurationAPI
+  | DomainAPI
+  | UserPasswordUpdate;

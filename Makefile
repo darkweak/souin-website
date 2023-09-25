@@ -8,7 +8,7 @@ analyse:
 	$(EXEC_PHP) vendor/bin/phpstan analyse ./src --level 9
 
 cs-fixer:
-	$(EXEC_PHP) vendor/bin/php-cs-fixer fix src --help
+	$(EXEC_PHP) vendor/bin/php-cs-fixer fix src
 
 delete-migrations:
 	$(DC) exec database psql -U app app -c "delete from doctrine_migration_versions"

@@ -13,7 +13,7 @@ import (
 )
 
 type CheckerChain struct {
-	*sync.Map
+	Map *sync.Map
 	logger *zap.Logger
 	cancel context.CancelFunc
 	ctx    context.Context
@@ -49,13 +49,13 @@ func isDomainValid(dns string, client httpClient, l *zap.Logger) bool {
 }
 
 type domain struct {
-	id   string
-	dns  string
-	subs map[string]string
+	Id   string `json:"id"`
+	Dns  string `json:"dns"`
+	Subs map[string]string `json:"subs"`
 }
 
 func (d *domain) Contains(zone string) bool {
-	for _, sub := range d.subs {
+	for _, sub := range d.Subs {
 		if sub == zone {
 			return true
 		}
@@ -66,10 +66,10 @@ func (d *domain) Contains(zone string) bool {
 
 func (c *CheckerChain) Add(id, dns, sub, ip string) {
 	c.logger.Sugar().Debugf("Try to add %s {dns: %s, sub: %s, ip: %s} to the checker loop", id, dns, sub, ip)
-	d, b := c.Map.LoadOrStore(id, &domain{id: id, dns: dns, subs: map[string]string{sub: ip}})
+	d, b := c.Map.LoadOrStore(id, &domain{Id: id, Dns: dns, Subs: map[string]string{sub: ip}})
 	if b {
-		if _, ok := d.(*domain).subs[sub]; sub != "" && !ok {
-			d.(*domain).subs[sub] = ip
+		if _, ok := d.(*domain).Subs[sub]; sub != "" && !ok {
+			d.(*domain).Subs[sub] = ip
 		}
 	}
 	c.Map.Store(id, d)
@@ -85,20 +85,26 @@ func (c *CheckerChain) Add(id, dns, sub, ip string) {
 				default:
 					c.Map.Range(func(key, value any) bool {
 						go func(dom *domain) {
-							if isDomainValid(dom.dns, getHTTPClient(), c.logger) {
-								subs := validateDomain(dom.id)
-								deployer.Deploy(dom.dns, subs, c.logger)
-								c.Del(dom.dns)
+							if isDomainValid(dom.Dns, getHTTPClient(), c.logger) {
+								subs := validateDomain(dom.Id)
+								if err := deployer.Deploy(dom.Dns, subs, c.logger); err != nil {
+									c.logger.Sugar().Errorf("%#v", err)
+									return
+								}
+								c.Del(dom.Id)
 
 								return
 							}
 
-							for sub := range dom.subs {
-								if sub != "" && isDomainValid(sub+"."+dom.dns, getHTTPClient(), c.logger) {
-									subs := validateDomain(dom.id)
-									deployer.Deploy(dom.dns, subs, c.logger)
-									c.Del(dom.id)
-
+							for sub := range dom.Subs {
+								if sub != "" && isDomainValid(sub+"."+dom.Dns, getHTTPClient(), c.logger) {
+									subs := validateDomain(dom.Id)
+									if err := deployer.Deploy(dom.Dns, subs, c.logger); err != nil {
+										c.logger.Sugar().Errorf("%#v", err)
+										return
+									}
+									
+									c.Del(dom.Id)
 									return
 								}
 							}

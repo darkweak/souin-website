@@ -19,12 +19,14 @@ class DomainVoter extends Voter
     {
         return in_array($attribute, [self::EDIT]) && $subject instanceof Domain;
     }
+
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         switch ($attribute) {
             case self::EDIT:
                 return $this->request->getMainRequest()?->getHost() === \getenv('TRUSTED_MIDDLEWARE') && \is_null($token->getUser());
         }
+
         return false;
     }
 }

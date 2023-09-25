@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"souin_middleware/pkg"
 	"strings"
@@ -54,17 +55,56 @@ type creationPayload struct {
 	} `json:"domain"`
 }
 
+func (s *Middleware) handleAPI(rw http.ResponseWriter, r *http.Request) bool {
+	if r.URL.Path == "/middleware/debug/deployer" {
+		if r.Method == http.MethodGet {
+			value := map[string]any{}
+			s.checker.Map.Range(func (k, v any) bool {
+				value[k.(string)] = v
+				return true
+			})
+
+			b, _ := json.Marshal(value)
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusOK)
+			rw.Write(b)
+			return true
+		}
+
+		if r.Method == http.MethodDelete {
+			var body map[string]string
+			if v, err := io.ReadAll(r.Body); err == nil {
+				if err := json.Unmarshal(v, &body); err == nil {
+					s.checker.Map.Delete(body["key"])
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
 func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
-	method := r.Method
+	if s.handleAPI(rw, r) {
+	s.logger.Debug("Internal API can handle")
+		return nil
+	}
+	s.logger.Debug("Internal API cannot handle")
+
 	path := r.URL.Path
+	method := r.Method
 	mrw := newWriter(rw)
 	if err := next.ServeHTTP(mrw, r); err != nil {
+		s.logger.Debug("ServeHTTP returned an error")
 		return err
 	}
 
+	s.logger.Sugar().Debugf("Is candidate to add %v: \n%v\n%v\n%v\n", isCandidateToAdd(path, method, mrw.status), path, method, mrw.status)
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
+			s.logger.Sugar().Debugf("Error while unmarshaling %#v", err)
 			return nil
 		}
 
@@ -83,6 +123,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 		return nil
 	}
 
+	s.logger.Sugar().Debugf("Is candidate to del %v", isCandidateToAdd(path, method, mrw.status))
 	if isCandidateToDel(path, method, mrw.status) {
 		s.checker.Del(path)
 
@@ -94,6 +135,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 
 func (s *Middleware) Provision(ctx caddy.Context) error {
 	s.logger = ctx.Logger(s)
+	s.logger.Debug("Start middleware provisioning")
 	s.checker = pkg.NewCheckerChain(s.logger)
 	domains := pkg.RetrieveDomains(s.logger)
 

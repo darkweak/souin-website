@@ -27,6 +27,7 @@ export const defaultJson: JsonSchema = {
   cache_name: 'Souin',
   default_cache_control: 'public, s-maxage=86400',
   distributed: true,
+  max_cachable_body_bytes: 0,
   mode: 'strict',
   regex: { exclude: 'url_regex_to_exclude.+' },
   stale: '1d',
@@ -54,7 +55,10 @@ type JsonFormAction = {
   payload: JsonSchema;
 };
 
-const reducer = (state: JsonSchema = initialState, { type, payload }: JsonFormAction) => {
+const reducer = (
+  state: JsonSchema = initialState,
+  { type, payload }: JsonFormAction,
+) => {
   switch (type) {
     case 'update':
       if (!payload) {
@@ -62,14 +66,17 @@ const reducer = (state: JsonSchema = initialState, { type, payload }: JsonFormAc
       }
 
       if (payload.cache_keys) {
-        payload.cache_keys = Object.entries(payload.cache_keys).reduce((acc, [currentPrevKey, current]) => {
-          acc[currentPrevKey] = current;
-          if (current.key) {
-            delete acc[currentPrevKey as string];
-            acc[current.key ?? ''] = { ...current };
-          }
-          return acc;
-        }, {} as Record<string, Key & { key?: string }>);
+        payload.cache_keys = Object.entries(payload.cache_keys).reduce(
+          (acc, [currentPrevKey, current]) => {
+            acc[currentPrevKey] = current;
+            if (current.key) {
+              delete acc[currentPrevKey as string];
+              acc[current.key ?? ''] = { ...current };
+            }
+            return acc;
+          },
+          {} as Record<string, Key & { key?: string }>,
+        );
       }
       return {
         ...state,
@@ -84,17 +91,21 @@ type JsonContextProps = {
   configurationId: string;
 };
 
-export const JsonProvider: React.FC<React.PropsWithChildren<JsonContextProps>> = ({
-  configurationId,
-  json = defaultJson,
-  children,
-}) => {
+export const JsonProvider: React.FC<
+  React.PropsWithChildren<JsonContextProps>
+> = ({ configurationId, json = defaultJson, children }) => {
   const [jsonState, dispatch] = useReducer(reducer, json);
   useEffect(() => {
-    new Configuration().update(configurationId, { configuration: JSON.stringify(jsonState) });
-  }, [jsonState]);
+    new Configuration().update(configurationId, {
+      configuration: JSON.stringify(jsonState),
+    });
+  }, [configurationId, jsonState]);
 
-  return <JsonContext.Provider value={{ json: jsonState, dispatch }}>{children}</JsonContext.Provider>;
+  return (
+    <JsonContext.Provider value={{ json: jsonState, dispatch }}>
+      {children}
+    </JsonContext.Provider>
+  );
 };
 
 export const useDispatchConfiguration = () => {

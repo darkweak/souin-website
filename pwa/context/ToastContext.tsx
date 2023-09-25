@@ -16,21 +16,27 @@ const mapVariantToToastType = (variant: AllowedVariant): string => {
   return variant;
 };
 
-const ToastContext = React.createContext<(toast: toastContextType) => void>(() => {
-  return;
-});
+const ToastContext = React.createContext<(toast: toastContextType) => void>(
+  () => {
+    return;
+  },
+);
 
-export const ToastProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [toastList, setToastList] = useState<ReadonlyArray<toastContextType>>([]);
+export const ToastProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const [toastList, setToastList] = useState<ReadonlyArray<toastContextType>>(
+    [],
+  );
 
   const pushToast = useCallback(
     (toast: toastContextType) => {
-      setToastList((prevToasts) => [...prevToasts, toast]);
+      setToastList(prevToasts => [...prevToasts, toast]);
       setTimeout(() => {
-        setToastList((prevToasts) => prevToasts.slice(1));
+        setToastList(prevToasts => prevToasts.slice(1));
       }, 3000);
     },
-    [setToastList]
+    [setToastList],
   );
 
   return (
@@ -39,7 +45,11 @@ export const ToastProvider: React.FC<React.PropsWithChildren> = ({ children }) =
         {toastList.map((toast, idx) => (
           <Popup
             {...toast}
-            variant={`alert-${mapVariantToToastType(toast.variant)}` as AllowedVariantPopup}
+            variant={
+              `alert-${mapVariantToToastType(
+                toast.variant,
+              )}` as AllowedVariantPopup
+            }
             key={idx}
           />
         ))}

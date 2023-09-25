@@ -38,13 +38,13 @@ final class AdminContextBuilder implements SerializerContextBuilderInterface
         }
 
         $resourceClass = $context['resource_class'] ?? null;
-        if (Request::METHOD_PATCH === $request->getMethod() && $resourceClass === Domain::class && \getenv('TRUSTED_MIDDLEWARE') === $request->getHost() && !$normalization) {
+        if (Request::METHOD_PATCH === $request->getMethod() && Domain::class === $resourceClass && \getenv('TRUSTED_MIDDLEWARE') === $request->getHost() && !$normalization) {
             if (!is_array($context['groups'])) {
                 $context['groups'] = [$context['groups']];
             }
             $context['groups'][] = 'middleware:update:domain_denormalization';
         }
-        if (Request::METHOD_GET === $request->getMethod() && $resourceClass === Domain::class && \getenv('TRUSTED_MIDDLEWARE') === $request->getHost() && $normalization) {
+        if (Request::METHOD_GET === $request->getMethod() && Domain::class === $resourceClass && \getenv('TRUSTED_MIDDLEWARE') === $request->getHost() && $normalization) {
             if (!is_array($context['groups'])) {
                 $context['groups'] = [$context['groups']];
             }
