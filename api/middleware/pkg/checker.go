@@ -127,6 +127,7 @@ func (c *CheckerChain) Del(dns string) {
 		c.logger.Debug("Stop the checker loop")
 		if c.cancel != nil {
 			c.cancel()
+			c.cancel = nil
 		}
 	}
 }
