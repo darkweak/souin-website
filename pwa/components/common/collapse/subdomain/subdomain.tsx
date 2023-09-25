@@ -49,7 +49,7 @@ export const Subdomain: React.FC<subdomainProps> = ({
         onChange={() => setUpdated(true)}
       />
       <InputBase
-        label="ip"
+        label="DNS or IP to proxy to"
         name="ip"
         className="w-full"
         defaultValue={ip}

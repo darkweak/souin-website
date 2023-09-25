@@ -73,7 +73,7 @@ func parseValue(key string, value interface{}) string {
 				}
 			}
 			
-			s += fmt.Sprintf("\n  %s {%s\n        }", ckKey, c)
+			s += fmt.Sprintf("\n        %s {%s\n        }", ckKey, c)
 		}
 
 		return fmt.Sprintf("cache_keys {%s\n      }", s)

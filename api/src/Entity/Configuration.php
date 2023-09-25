@@ -64,6 +64,10 @@ class Configuration
 
     #[Assert\NotBlank]
     #[Groups(['get_configuration_normalization', 'create_configuration_normalization', 'create_configuration_denormalization', 'update_configuration_normalization', 'update_configuration_denormalization', 'middleware:get:domain_normalization'])]
+    #[Assert\AtLeastOneOf([
+        new Assert\Ip(),
+        new Assert\Hostname(message: 'The server name must be a valid hostname.')
+    ])]
     #[ORM\Column(length: 39)]
     private string $ip = '';
 
