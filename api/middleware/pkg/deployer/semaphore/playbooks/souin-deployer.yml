@@ -9,14 +9,14 @@
       register: result
 
     - name: Retrieve the Caddyfile.j2 from the server
-      copy:
+      fetch:
         src: '{{ basepath }}/Caddyfile.j2'
-        dest: ./Caddyfile.j2
-        remote_src: yes
+        dest: ./
+        flat: yes
 
     - name: Generate Caddyfile
       template:
-        src: Caddyfile.j2
+        src: ./Caddyfile.j2
         dest: '{{ basepath }}/Caddyfile-{{ label }}'
       vars:
         domain: '{{ CURRENT_DOMAIN }}'
