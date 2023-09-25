@@ -52,7 +52,9 @@ func parseValue(key string, value interface{}) string {
 	case "cache_name", "default_cache_control", "mode", "ttl", "stale":
 		return fmt.Sprintf("%s %s", key, value.(string))
 	case "distributed":
-		return fmt.Sprintf("%s %v", key, value.(bool))
+		if v, ok := value.(bool); ok && v {
+			return fmt.Sprintf("%s %v", key, value.(bool))
+		}
 	case "cache_keys":
 		s := ""
 		cacheKeys := value.(map[string]interface{})
@@ -86,9 +88,9 @@ func getCaddyfileValues(value map[string]interface{}) string {
 	for k, v := range value {
 		s := parseValue(k, v)
 		if s != "" {
-			acc += "\n          "+s
+			acc += "\n      "+s
 		}
 	}
 
-	return fmt.Sprintf("{%s\n        }", acc)
+	return fmt.Sprintf("{%s\n    }", acc)
 }

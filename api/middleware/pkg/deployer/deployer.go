@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"souin_middleware/pkg/api"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -29,6 +31,7 @@ type deployer struct {
 	token      string
 	projectId  string
 	templateId string
+	logger     *zap.Logger
 }
 
 func newDeployer() *deployer {
@@ -96,8 +99,9 @@ func (d *deployer) deploy(domain string, subs map[string]api.Configuration) (err
 	return d.createAndRunTask(domain, subs)
 }
 
-func Deploy(domain string, subs map[string]api.Configuration) {
+func Deploy(domain string, subs map[string]api.Configuration, l *zap.Logger) {
 	d := newDeployer()
+	d.logger = l
 	err := d.login()
 	if err != nil {
 		panic(err)
@@ -113,5 +117,5 @@ func Deploy(domain string, subs map[string]api.Configuration) {
 		panic(err)
 	}
 
-	fmt.Printf("Successfully deployed %s", domain)
+	l.Sugar().Infof("Successfully deployed %s", domain)
 }

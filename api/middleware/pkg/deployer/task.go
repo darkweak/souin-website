@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"souin_middleware/pkg/api"
 	"strings"
@@ -54,7 +53,7 @@ func (d *deployer) insertTask(domain string, subs map[string]api.Configuration) 
 		TemplateId:    d.templateId,
 		Environment:   getEscapedEnvironment(domain, subs),
 	})
-	fmt.Println(buf.String())
+	d.logger.Debug(buf.String())
 	rq, err := d.getAuthRequest("/project/"+d.projectId+"/tasks", http.MethodPost, &buf)
 	if err != nil {
 		return err
@@ -66,6 +65,7 @@ func (d *deployer) insertTask(domain string, subs map[string]api.Configuration) 
 		return err
 	}
 
+	d.logger.Sugar().Debugf("%#v", res)
 	if res.StatusCode != http.StatusCreated {
 		return errors.New("impossible to create the task")
 	}
