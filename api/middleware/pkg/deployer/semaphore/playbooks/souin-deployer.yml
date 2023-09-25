@@ -8,16 +8,16 @@
       shell: "docker node ls | grep Leader | awk '{print $1}'"
       register: result
 
-    - name: Install rsync
-      become: yes
-      apt:
-        name: rsync
-        update_cache: yes
+    - name: Retrieve the Caddyfile.j2 from the server
+      copy:
+        src: '{{ basepath }}/Caddyfile.j2'
+        dest: ./Caddyfile.j2
+        remote_src: yes
 
     - name: Generate Caddyfile
       template:
-        remote_src: '{{ basepath }}/Caddyfile.j2'
-        dest: '{{ basepath }}/Caddyfile-{{ LABEL }}'
+        src: Caddyfile.j2
+        dest: '{{ basepath }}/Caddyfile-{{ label }}'
       vars:
         domain: '{{ CURRENT_DOMAIN }}'
         configuration: '{{ CONFIGURATION }}'
