@@ -87,16 +87,20 @@ func (s *Middleware) handleAPI(rw http.ResponseWriter, r *http.Request) bool {
 
 func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	if s.handleAPI(rw, r) {
+	s.logger.Debug("Internal API can handle")
 		return nil
 	}
+	s.logger.Debug("Internal API cannot handle")
 
 	method := r.Method
 	mrw := newWriter(rw)
 	if err := next.ServeHTTP(mrw, r); err != nil {
+		s.logger.Debug("ServeHTTP returned an error")
 		return err
 	}
 
 	path := r.URL.Path
+	s.logger.Sugar().Debugf("Is candidate to add %v", isCandidateToAdd(path, method, mrw.status))
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
@@ -119,6 +123,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 		return nil
 	}
 
+	s.logger.Sugar().Debugf("Is candidate to del %v", isCandidateToAdd(path, method, mrw.status))
 	if isCandidateToDel(path, method, mrw.status) {
 		s.checker.Del(path)
 
@@ -129,6 +134,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 }
 
 func (s *Middleware) Provision(ctx caddy.Context) error {
+	s.logger.Debug("Start middleware provisioning")
 	s.logger = ctx.Logger(s)
 	s.checker = pkg.NewCheckerChain(s.logger)
 	domains := pkg.RetrieveDomains(s.logger)
@@ -143,6 +149,7 @@ func (s *Middleware) Provision(ctx caddy.Context) error {
 }
 
 func (s *Middleware) UnmarshalCaddyfile(_ *caddyfile.Dispenser) error {
+	s.logger.Debug("UnmarshalCaddyfile")
 	return nil
 }
 
