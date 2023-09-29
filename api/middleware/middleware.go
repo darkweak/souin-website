@@ -56,7 +56,7 @@ type creationPayload struct {
 }
 
 func (s *Middleware) handleAPI(rw http.ResponseWriter, r *http.Request) bool {
-	if r.URL.Path == "/middleware/ebug/deployer" {
+	if r.URL.Path == "/middleware/debug/deployer" {
 		if r.Method == http.MethodGet {
 			var value map[string]string
 			s.checker.Map.Range(func (k, v any) bool {
@@ -100,6 +100,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
+			s.logger.Sugar().Debugf("Error while unmarshaling %#v", err)
 			return nil
 		}
 
