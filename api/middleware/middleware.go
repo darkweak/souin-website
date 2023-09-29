@@ -100,7 +100,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 	}
 
 	path := r.URL.Path
-	s.logger.Sugar().Debugf("Is candidate to add %v", isCandidateToAdd(path, method, mrw.status))
+	s.logger.Sugar().Debugf("Is candidate to add %v: \n%v\n%v\n%v\n", isCandidateToAdd(path, method, mrw.status), path, method, mrw.status)
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
