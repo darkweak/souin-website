@@ -134,8 +134,8 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 }
 
 func (s *Middleware) Provision(ctx caddy.Context) error {
-	s.logger.Debug("Start middleware provisioning")
 	s.logger = ctx.Logger(s)
+	s.logger.Debug("Start middleware provisioning")
 	s.checker = pkg.NewCheckerChain(s.logger)
 	domains := pkg.RetrieveDomains(s.logger)
 
@@ -149,7 +149,6 @@ func (s *Middleware) Provision(ctx caddy.Context) error {
 }
 
 func (s *Middleware) UnmarshalCaddyfile(_ *caddyfile.Dispenser) error {
-	s.logger.Debug("UnmarshalCaddyfile")
 	return nil
 }
 
