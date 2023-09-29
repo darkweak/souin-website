@@ -92,6 +92,7 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 	}
 	s.logger.Debug("Internal API cannot handle")
 
+	path := r.URL.Path
 	method := r.Method
 	mrw := newWriter(rw)
 	if err := next.ServeHTTP(mrw, r); err != nil {
@@ -99,7 +100,6 @@ func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next cad
 		return err
 	}
 
-	path := r.URL.Path
 	s.logger.Sugar().Debugf("Is candidate to add %v: \n%v\n%v\n%v\n", isCandidateToAdd(path, method, mrw.status), path, method, mrw.status)
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
