@@ -13,7 +13,7 @@ import (
 )
 
 type CheckerChain struct {
-	*sync.Map
+	Map *sync.Map
 	logger *zap.Logger
 	cancel context.CancelFunc
 	ctx    context.Context
@@ -88,6 +88,10 @@ func (c *CheckerChain) Add(id, dns, sub, ip string) {
 							if isDomainValid(dom.dns, getHTTPClient(), c.logger) {
 								subs := validateDomain(dom.id)
 								deployer.Deploy(dom.dns, subs, c.logger)
+								if err := deployer.Deploy(dom.dns, subs, c.logger); err != nil {
+									c.logger.Sugar().Errorf("%#v", err)
+									return
+								}
 								c.Del(dom.dns)
 
 								return
@@ -96,9 +100,12 @@ func (c *CheckerChain) Add(id, dns, sub, ip string) {
 							for sub := range dom.subs {
 								if sub != "" && isDomainValid(sub+"."+dom.dns, getHTTPClient(), c.logger) {
 									subs := validateDomain(dom.id)
-									deployer.Deploy(dom.dns, subs, c.logger)
+									if err := deployer.Deploy(dom.dns, subs, c.logger); err != nil {
+										c.logger.Sugar().Errorf("%#v", err)
+										return
+									}
+									
 									c.Del(dom.id)
-
 									return
 								}
 							}

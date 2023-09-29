@@ -99,12 +99,12 @@ func (d *deployer) deploy(domain string, subs map[string]api.Configuration) (err
 	return d.createAndRunTask(domain, subs)
 }
 
-func Deploy(domain string, subs map[string]api.Configuration, l *zap.Logger) {
+func Deploy(domain string, subs map[string]api.Configuration, l *zap.Logger) error {
 	d := newDeployer()
 	d.logger = l
 	err := d.login()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	d.projectId = os.Getenv(ENV_PROJECT_ID)
 	d.templateId = os.Getenv(ENV_TEMPLATE_ID)
@@ -114,8 +114,10 @@ func Deploy(domain string, subs map[string]api.Configuration, l *zap.Logger) {
 	}
 
 	if err := d.deploy(domain, subs); err != nil {
-		panic(err)
+		return err
 	}
 
 	l.Sugar().Infof("Successfully deployed %s", domain)
+
+	return nil
 }

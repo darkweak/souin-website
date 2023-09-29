@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"souin_middleware/pkg"
 	"strings"
@@ -54,14 +55,48 @@ type creationPayload struct {
 	} `json:"domain"`
 }
 
+func (s *Middleware) handleAPI(rw http.ResponseWriter, r *http.Request) bool {
+	if r.URL.Path == "/middleware/ebug/deployer" {
+		if r.Method == http.MethodGet {
+			var value map[string]string
+			s.checker.Map.Range(func (k, v any) bool {
+				value[k.(string)] = v.(string)
+				return true
+			})
+
+			b, _ := json.Marshal(value)
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusOK)
+			rw.Write(b)
+			return true
+		}
+
+		if r.Method == http.MethodDelete {
+			var body map[string]string
+			if v, err := io.ReadAll(r.Body); err == nil {
+				if err := json.Unmarshal(v, &body); err == nil {
+					s.checker.Map.Delete(body["key"])
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
 func (s *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+	if s.handleAPI(rw, r) {
+		return nil
+	}
+
 	method := r.Method
-	path := r.URL.Path
 	mrw := newWriter(rw)
 	if err := next.ServeHTTP(mrw, r); err != nil {
 		return err
 	}
 
+	path := r.URL.Path
 	if isCandidateToAdd(path, method, mrw.status) {
 		var domain creationPayload
 		if err := json.Unmarshal(mrw.body.Bytes(), &domain); err != nil {
